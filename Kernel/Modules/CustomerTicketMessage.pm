@@ -157,8 +157,6 @@ sub Run {
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
     }
 
-    print STDERR Dumper \%GetParam;
-
     # probably not needed...
     my %ACLCompatGetParam;
 
@@ -254,7 +252,7 @@ sub Run {
             }
         }
 
-        my $Autoselect = $ConfigObject->Get('TicketACL::Autoselect') || undef;
+        my $Autoselect = $ConfigObject->Get('TicketACL::CustomerAutoselect') || undef;
 
         # gather fields which are supposed to be hidden when autoselected
         my $HideAutoselectedJSON;
@@ -1108,7 +1106,7 @@ sub Run {
             $TreeView = 1;
         }
 
-        my $Autoselect = $ConfigObject->Get('TicketACL::Autoselect') || undef;
+        my $Autoselect = $ConfigObject->Get('TicketACL::CustomerAutoselect') || undef;
 
         # track changing standard fields
         my $ACLPreselection;
@@ -1541,6 +1539,7 @@ sub Run {
         # update ticket body and attachements if needed.
 
         if ( $ChangedStdFields{StandardTemplateID} ) {
+
             my @TicketAttachments;
             my $TemplateText;
 

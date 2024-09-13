@@ -123,6 +123,10 @@ sub new {
             FieldID => 'NextStateID',
             Method  => \&_GetNextStates
         },
+        {
+            FieldID => 'StandardTemplateID',
+            Method  => \&_GetStandardTemplates
+        },
     ];
 
     # dependancies of standard fields which are not defined via ACLs - here for consistency
@@ -452,6 +456,7 @@ sub Run {
                 my %Check = (
                     NextStateID => 'NextStateID',
                     PriorityID  => 'PriorityID',
+                    StandardTemplateID  => 'StandardTemplateID',
                 );
                 if ($ACLPreselection) {
                     FIELD:
@@ -757,6 +762,10 @@ sub Run {
                 Translation => 1,
                 Max         => 100,
             },
+            StandardTemplateID => {
+                Translation => 1,
+                Max         => 100,
+            },
         );
         my %Diversity = reverse %Uniformity;
         for my $Field ( sort keys %StdFieldValues ) {
@@ -847,7 +856,6 @@ sub Run {
                 },
             );
         }
-
 
         my $JSON = $LayoutObject->BuildSelectionJSON(
             [
@@ -1390,7 +1398,7 @@ sub Run {
     }
 
     my $FieldRestrictionsObject = $Kernel::OM->Get('Kernel::System::Ticket::FieldRestrictions');
-    my $Autoselect              = $ConfigObject->Get('TicketACL::Autoselect') || undef;
+    my $Autoselect              = $ConfigObject->Get('TicketACL::CustomerAutoselect') || undef;
 
     # gather fields which are supposed to be hidden when autoselected
     my $HideAutoselectedJSON;
@@ -1441,9 +1449,7 @@ sub Run {
     );
 
     my $InitialRun = 1;
-
     until ( $Convergence{Fields} ) {
-
         # determine standard field input
         until ( $Convergence{StdFields} ) {
 
@@ -1453,7 +1459,9 @@ sub Run {
             my %Check = (
                 NextStateID => 'NextStateID',
                 PriorityID  => 'PriorityID',
+                StandardTemplateID  => 'StandardTemplateID',
             );
+
             if ( $ACLPreselection && !$InitialRun ) {
                 FIELD:
                 for my $FieldID ( sort keys %Check ) {
@@ -2681,6 +2689,387 @@ sub _Mask {
             UserFirstname         => $CustomerUser{UserFirstname},
             UserLastname          => $CustomerUser{UserLastname},
         },
+    );
+}
+
+sub _GetStandardTemplates {
+    my ( $Self, %Param ) = @_;
+    my %Templates;
+    my $QueueID = $Param{QueueID} || '';
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $QueueObject  = $Kernel::OM->Get('Kernel::System::Queue');
+
+    if ( !$QueueID ) {
+        my $UserDefaultQueue = $ConfigObject->Get('Ticket::Frontend::UserDefaultQueue') || '';
+
+        if ($UserDefaultQueue) {
+            $QueueID = $QueueObject->QueueLookup( Queue => $UserDefaultQueue );
+        }
+    }
+
+    # check needed
+    return \%Templates if !$QueueID && !$Param{TicketID};
+
+    if ( !$QueueID && $Param{TicketID} ) {
+
+        # get QueueID from the ticket
+        my %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
+            TicketID      => $Param{TicketID},
+            DynamicFields => 0,
+            UserID        => $Self->{UserID},
+        );
+        $QueueID = $Ticket{QueueID} || '';
+    }
+
+    # fetch all std. templates
+    my %StandardTemplates = $QueueObject->QueueStandardTemplateMemberList(
+        QueueID       => $QueueID,
+        TemplateTypes => 1,
+    );
+
+    # return empty hash if there are no templates for this screen
+    return \%Templates if !IsHashRefWithData( $StandardTemplates{CustomerAnswer} );
+
+    # return just the templates for this screen
+    return $StandardTemplates{CustomerAnswer};
+}
+
+sub _MaskNew {
+    my ( $Self, %Param ) = @_;
+
+    $Param{FormID} = $Self->{FormID};
+    $Param{Errors}->{QueueInvalid} = $Param{Errors}->{QueueInvalid} || '';
+
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    # get list type
+    my $TreeView = 0;
+    if ( $ConfigObject->Get('Ticket::Frontend::ListType') eq 'tree' ) {
+        $TreeView = 1;
+    }
+
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $Config       = $ConfigObject->Get("Ticket::Frontend::$Self->{Action}");
+
+    if ( $Config->{Queue} ) {
+
+        # check own selection
+        my %NewTos = ( '', '-' );
+        my $Module = $ConfigObject->Get('CustomerPanel::NewTicketQueueSelectionModule')
+            || 'Kernel::Output::HTML::CustomerNewTicket::QueueSelectionGeneric';
+        if ( $Kernel::OM->Get('Kernel::System::Main')->Require($Module) ) {
+            my $Object = $Module->new(
+                %{$Self},
+                SystemAddress => $Kernel::OM->Get('Kernel::System::SystemAddress'),
+                Debug         => $Self->{Debug},
+            );
+
+            # log loaded module
+            if ( $Self->{Debug} && $Self->{Debug} > 1 ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'debug',
+                    Message  => "Module: $Module loaded!",
+                );
+            }
+            %NewTos = (
+                $Object->Run(
+                    Env       => $Self,
+                    ACLParams => \%Param
+                ),
+                ( '', => '-' )
+            );
+        }
+        else {
+            return $LayoutObject->FatalError();
+        }
+
+        # build to string
+        if (%NewTos) {
+            for ( sort keys %NewTos ) {
+                $NewTos{"$_||$NewTos{$_}"} = $NewTos{$_};
+                delete $NewTos{$_};
+            }
+        }
+
+        $Param{ToStrg} = $LayoutObject->AgentQueueListOption(
+            Data       => \%NewTos,
+            Multiple   => 0,
+            Size       => 0,
+            Name       => 'Dest',
+            Class      => "Validate_Required Modernize FormUpdate " . $Param{Errors}->{QueueInvalid},
+            SelectedID => $Param{ToSelected} || $Param{QueueID},
+            TreeView   => $TreeView,
+        );
+
+        $LayoutObject->Block(
+            Name => 'Queue',
+            Data => {
+                %Param,
+                QueueInvalid => $Param{Errors}->{QueueInvalid},
+            },
+        );
+
+    }
+
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
+    # get priority
+    if ( $Config->{Priority} ) {
+        my %Priorities = $TicketObject->TicketPriorityList(
+            %Param,
+            CustomerUserID => $Self->{UserID},
+            Action         => $Self->{Action},
+        );
+
+        # build priority string
+        my %PrioritySelected;
+        if ( $Param{PriorityID} ) {
+            $PrioritySelected{SelectedID} = $Param{PriorityID};
+        }
+        else {
+            $PrioritySelected{SelectedValue} = $Config->{PriorityDefault} || '3 normal';
+        }
+        $Param{PriorityStrg} = $LayoutObject->BuildSelection(
+            Data  => \%Priorities,
+            Name  => 'PriorityID',
+            Class => 'Modernize FormUpdate',
+            %PrioritySelected,
+        );
+        $LayoutObject->Block(
+            Name => 'Priority',
+            Data => \%Param,
+        );
+    }
+
+    # types
+    if ( $ConfigObject->Get('Ticket::Type') && $Config->{'TicketType'} ) {
+        my %Type = $TicketObject->TicketTypeList(
+            %Param,
+            Action         => $Self->{Action},
+            CustomerUserID => $Self->{UserID},
+        );
+
+        if ( $Config->{'TicketTypeDefault'} && !$Param{TypeID} ) {
+            my %ReverseType = reverse %Type;
+            $Param{TypeID} = $ReverseType{ $Config->{'TicketTypeDefault'} };
+        }
+
+        $Param{TypeStrg} = $LayoutObject->BuildSelection(
+            Data         => \%Type,
+            Name         => 'TypeID',
+            SelectedID   => $Param{TypeID},
+            PossibleNone => 1,
+            Sort         => 'AlphanumericValue',
+            Translation  => 1,
+            Class        => "Validate_Required Modernize FormUpdate " . ( $Param{Errors}->{TypeIDInvalid} || '' ),
+        );
+        $LayoutObject->Block(
+            Name => 'TicketType',
+            Data => {
+                %Param,
+                TypeIDInvalid => $Param{Errors}->{TypeIDInvalid},
+            }
+        );
+    }
+
+    # services
+    if ( $ConfigObject->Get('Ticket::Service') && $Config->{Service} ) {
+
+        # use either the real QueueID, or the TicketID, or 1 as QueueID
+        my $TmpQueueID = $Param{QueueID} ? $Param{QueueID} :
+            $Param{TicketID} ? undef : 1;
+
+        my %Services = $TicketObject->TicketServiceList(
+            %Param,
+            QueueID        => $TmpQueueID,
+            Action         => $Self->{Action},
+            CustomerUserID => $Self->{UserID},
+        );
+
+        $Param{ServiceStrg} = $LayoutObject->BuildSelection(
+            Data       => \%Services,
+            Name       => 'ServiceID',
+            SelectedID => $Param{ServiceID},
+            Class      => 'Modernize FormUpdate '
+                . ( $Config->{ServiceMandatory} ? 'Validate_Required ' : '' )
+                . ( $Param{Errors}->{ServiceIDInvalid} || '' ),
+            PossibleNone => 1,
+            TreeView     => $TreeView,
+            Sort         => 'TreeView',
+            Translation  => $TreeView,
+            Max          => 200,
+        );
+        $LayoutObject->Block(
+            Name => 'TicketService',
+            Data => {
+                ServiceMandatory => $Config->{ServiceMandatory} || 0,
+                %Param,
+            },
+        );
+
+        # reset previous ServiceID to reset SLA-List if no service is selected
+        if ( !$Services{ $Param{ServiceID} || '' } ) {
+            $Param{ServiceID} = '';
+        }
+        my %SLA;
+        if ( $Config->{SLA} ) {
+            if ( $Param{ServiceID} ) {
+                %SLA = $TicketObject->TicketSLAList(
+                    QueueID => 1,    # use default QueueID if none is provided in %Param
+                    %Param,
+                    Action         => $Self->{Action},
+                    CustomerUserID => $Self->{UserID},
+                );
+            }
+
+            $Param{SLAStrg} = $LayoutObject->BuildSelection(
+                Data       => \%SLA,
+                Name       => 'SLAID',
+                SelectedID => $Param{SLAID},
+                Class      => 'Modernize FormUpdate '
+                    . ( $Config->{SLAMandatory} ? 'Validate_Required ' : '' )
+                    . ( $Param{Errors}->{SLAInvalid} || '' ),
+                PossibleNone => 1,
+                Sort         => 'AlphanumericValue',
+                Translation  => 1,
+                Max          => 200,
+            );
+            $LayoutObject->Block(
+                Name => 'TicketSLA',
+                Data => {
+                    SLAMandatory => $Config->{SLAMandatory} || 0,
+                    %Param,
+                }
+            );
+        }
+    }
+
+        # prepare errors
+    if ( $Param{Errors} ) {
+        for ( sort keys %{ $Param{Errors} } ) {
+            $Param{$_} = $Param{Errors}->{$_};
+        }
+    }
+
+    my $SeparateDynamicFields = $ConfigObject->Get('Ticket::CustomerFrontend::SeparateDynamicFields');
+
+    # render dynamic fields
+    $Param{DynamicFieldHTML} = $Kernel::OM->Get('Kernel::Output::HTML::DynamicField::Mask')->EditSectionRender(
+        Content              => $Self->{MaskDefinition},
+        DynamicFields        => $Self->{DynamicField},
+        LayoutObject         => $LayoutObject,
+        ParamObject          => $Kernel::OM->Get('Kernel::System::Web::Request'),
+        DynamicFieldValues   => $Param{DynamicField},
+        PossibleValuesFilter => $Param{DFPossibleValues},
+        Errors               => $Param{DFErrors},
+        Visibility           => $Param{Visibility},
+        CustomerInterface    => 1,
+        Object               => {
+            CustomerID     => $Self->{UserCustomerID},
+            CustomerUserID => $Self->{UserID},
+            $Param{DynamicField}->%*,
+        },
+    );
+
+    if ( !$Param{VisibilityStd}{Article} ) {
+        $Param{SubjectValidate}        = 'Validate_Required_IfVisible';
+        $Param{BodyValidate}           = 'Validate_Required_IfVisible';
+        $Param{SubjectHiddenClass}     = ' oooACLHidden';
+        $Param{BodyHiddenClass}        = ' oooACLHidden';
+        $Param{AttachmentsHiddenClass} = ' oooACLHidden';
+    }
+
+    else {
+        $Param{SubjectValidate} = 'Validate_Required_IfVisible';
+        $Param{BodyValidate}    = 'Validate_Required_IfVisible';
+    }
+
+    # check if exists customer create templates regardless the queue
+    my %StandardTemplates = $Kernel::OM->Get('Kernel::System::StandardTemplate')->StandardTemplateList(
+        Valid => 1,
+        Type  => 'CustomerAnswer',
+    );
+
+    # build text template string
+    if ( IsHashRefWithData( \%StandardTemplates ) ) {
+        $Param{StandardTemplateStrg} = $LayoutObject->BuildSelection(
+            Data         => {},
+            Name         => 'StandardTemplateID',
+            SelectedID   => $Param{StandardTemplateID} || '',
+            Class        => 'Modernize',
+            PossibleNone => 1,
+            Sort         => 'AlphanumericValue',
+            Translation  => 1,
+            Max          => 200,
+        );
+        $LayoutObject->Block(
+            Name => 'StandardTemplate',
+            Data => {%Param},
+        );
+    }
+
+    # show attachments
+    ATTACHMENT:
+    for my $Attachment ( @{ $Param{Attachments} } ) {
+        if (
+            $Attachment->{ContentID}
+            && $LayoutObject->{BrowserRichText}
+            && ( $Attachment->{ContentType} =~ /image/i )
+            && ( $Attachment->{Disposition} eq 'inline' )
+            )
+        {
+            next ATTACHMENT;
+        }
+
+        push @{ $Param{AttachmentList} }, $Attachment;
+    }
+
+    # add rich text editor
+    if ( $LayoutObject->{BrowserRichText} ) {
+
+        # use height/width defined for this screen
+        $Param{RichTextHeight} = $Config->{RichTextHeight} || 0;
+        $Param{RichTextWidth}  = $Config->{RichTextWidth}  || 0;
+
+        # set up customer rich text editor
+        $LayoutObject->CustomerSetRichTextParameters(
+            Data => \%Param,
+        );
+    }
+
+    # Permissions have been checked before in Run()
+    if ( $Param{FromChatID} ) {
+        my @ChatMessages = $Kernel::OM->Get('Kernel::System::Chat')->ChatMessageList(
+            ChatID => $Param{FromChatID},
+        );
+
+        for my $Message (@ChatMessages) {
+            $Message->{MessageText} = $LayoutObject->Ascii2Html(
+                Text        => $Message->{MessageText},
+                LinkFeature => 1,
+            );
+        }
+
+        $LayoutObject->Block(
+            Name => 'ChatArticlePreview',
+            Data => {
+                ChatMessages => \@ChatMessages,
+            },
+        );
+    }
+
+    if ( $Param{HideAutoselected} ) {
+
+        # add Autoselect JS
+        $LayoutObject->AddJSOnDocumentComplete(
+            Code => "Core.Form.InitHideAutoselected({ FieldIDs: $Param{HideAutoselected} });",
+        );
+    }
+
+    # get output back
+    return $LayoutObject->Output(
+        TemplateFile => 'CustomerTicketMessage',
+        Data         => \%Param,
     );
 }
 
