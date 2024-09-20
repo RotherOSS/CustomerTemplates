@@ -57,7 +57,9 @@ Core.Customer.TicketMessage = (function (TargetNS) {
             return false;
         });
 
-        $("#StandardTemplateID").trigger('change');        
+        if ( $('#StandardTemplateID').children().length == 2 ) {
+            $("#StandardTemplateID").trigger('change');
+        }
     };
 
     Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');

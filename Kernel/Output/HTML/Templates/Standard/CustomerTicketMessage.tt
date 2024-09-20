@@ -155,7 +155,6 @@
                     <div class="Clear"></div>
                 </div>
 [% RenderBlockEnd("StandardTemplate") %]
-
                 <div class="RichTextHolder RichTextField [% Data.BodyHiddenClass | html %]">
                     <textarea id="RichText" class="RichText [% Data.BodyValidate | html %] [% Data.BodyInvalid | html %]" name="Body" rows="15" cols="[% Config("Ticket::Frontend::TextAreaNote") %]">[% Data.Body | html %]</textarea>
                     <label for="RichText" class="Mandatory">

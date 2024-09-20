@@ -472,7 +472,9 @@ Core.Customer.TicketZoom = (function (TargetNS) {
             $('#oooTicketInfo.oooTicketInfoPermanent').css('margin-top', '0px').css('top', 'revert').css('max-height', 'revert');
         }
 
-        $("#StandardTemplateID").trigger('change');
+        if ( $('#StandardTemplateID').children().length == 2 ) {
+            $("#StandardTemplateID").trigger('change');
+        }
     };
 
     Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');

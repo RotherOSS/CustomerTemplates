@@ -55,7 +55,10 @@ sub Run {
         my %StandardTemplateData = $StandardTemplateObject->StandardTemplateGet( ID => $ID );
 
         # get services
-        my %ServiceData = $ServiceObject->ServiceList( Valid => 1 );
+        my %ServiceData = $ServiceObject->ServiceList( 
+            Valid => 1,
+            UserID => $Self->{UserID},
+        );
 
         # get assigned services
         my %Member = $ServiceObject->ServiceStandardTemplateMemberList(
@@ -113,7 +116,10 @@ sub Run {
 
         # get service data
         my $ID        = $ParamObject->GetParam( Param => 'ID' );
-        my %ServiceData = $ServiceObject->ServiceGet( ID => $ID );
+        my %ServiceData = $ServiceObject->ServiceGet( 
+            ServiceID => $ID,
+            UserID => $Self->{UserID},
+        );
 
         # get templates
         my %StandardTemplateData = $StandardTemplateObject->StandardTemplateList(

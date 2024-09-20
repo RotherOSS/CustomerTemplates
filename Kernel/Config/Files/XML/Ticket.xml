@@ -15662,4 +15662,34 @@ Thanks for your help!
         </Value>
     </Setting>
 
+    <Setting Name="TicketACL::CustomerAutoselect" Required="0" Valid="0">
+        <Description Translatable="1">Whether fields should be automatically filled (1), and in that case also be hidden from ticket formulars (2).</Description>
+        <Navigation>Core::Ticket::ACL</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="Dest">0</Item>
+                <Item Key="ServiceID">0</Item>
+                <Item Key="SLAID">0</Item>
+                <Item Key="NextStateID">0</Item>
+                <Item Key="TypeID">0</Item>
+                <Item Key="StandardTemplateID">0</Item>
+                <Item Key="DynamicField">
+                    <Hash>
+                    </Hash>
+                </Item>
+            </Hash>
+        </Value>
+    </Setting>
+
+    <Setting Name="CustomerTemplate::ReferenceAttribute" Required="0" Valid="1">
+        <Description Translatable="1">Defines if the list of available standard templates depends on the queue or on the service</Description>
+        <Navigation>Core::Ticket</Navigation>
+        <Value>
+            <Item ValueType="Select" SelectedID="queue">
+                <Item ValueType="Option" Value="queue" Translatable="1">Queue</Item>
+                <Item ValueType="Option" Value="service" Translatable="1">Service</Item>
+            </Item>
+        </Value>
+    </Setting>
+
 </otobo_config>

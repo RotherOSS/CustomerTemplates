@@ -325,7 +325,7 @@ sub Run {
     }
 
     my %GetParam;
-    for my $Key (qw(Subject Body StateID PriorityID FromChatID FromChat StandardTemplateID)) {
+    for my $Key (qw(Subject Body StateID PriorityID FromChatID FromChat ServiceID StandardTemplateID)) {
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
     }
 
@@ -382,6 +382,7 @@ sub Run {
     $GetParam{DynamicField} = \%DynamicFieldACLParameters;
 
     if ( $Self->{Subaction} eq 'AJAXUpdate' ) {
+
         # get TicketID
         if ( !$GetParam{TicketID} ) {
             $GetParam{TicketID} =
@@ -405,7 +406,7 @@ sub Run {
         }
 
         my $FieldRestrictionsObject = $Kernel::OM->Get('Kernel::System::Ticket::FieldRestrictions');
-        my $Autoselect              = $ConfigObject->Get('TicketACL::Autoselect') || undef;
+        my $Autoselect              = $ConfigObject->Get('TicketACL::CustomerAutoselect') || undef;
 
         # track changing standard fields
         my $ACLPreselection;
@@ -497,7 +498,6 @@ sub Run {
                 METHOD:
                 for my $Field ( @{ $Self->{FieldMethods} } ) {
                     next METHOD if !$Check{ $Field->{FieldID} };
-
                     # use $Check{ $Field->{FieldID} } for Dest=>QueueID
                     $StdFieldValues{ $Check{ $Field->{FieldID} } } = $Field->{Method}->(
                         $Self,
@@ -2515,7 +2515,7 @@ sub _Mask {
         );
 
 
-        # check if exists customer answer templates regardless the queue
+        # check if exists customer answer templates regardless the queue and the service
         my %StandardTemplates = $Kernel::OM->Get('Kernel::System::StandardTemplate')->StandardTemplateList(
             Valid => 1,
             Type  => 'CustomerAnswer',
@@ -2523,14 +2523,12 @@ sub _Mask {
 
         # build text template string
         if ( IsHashRefWithData( \%StandardTemplates ) ) {
-            my $QueueObject  = $Kernel::OM->Get('Kernel::System::Queue');
-            my %StandardTemplatesForQueue = $QueueObject->QueueStandardTemplateMemberList(
-                QueueID       => $Ticket{QueueID},
-                TemplateTypes => 1,
+            # fetch all available std. templates
+            my $AvailableStandardTemplates = $Self->_GetStandardTemplates(
+                %Param,
             );
-
             $Param{StandardTemplateStrg} = $LayoutObject->BuildSelection(
-                Data         => $StandardTemplatesForQueue{CustomerAnswer} || {},
+                Data         => $AvailableStandardTemplates || {},
                 Name         => 'StandardTemplateID',
                 SelectedID   => $Param{StandardTemplateID} || '',
                 Class        => 'Modernize',
@@ -2544,8 +2542,6 @@ sub _Mask {
                 Data => {%Param},
             );
         }
-
-
 
         # add rich text editor
         if ( $LayoutObject->{BrowserRichText} ) {
@@ -2694,44 +2690,73 @@ sub _Mask {
 
 sub _GetStandardTemplates {
     my ( $Self, %Param ) = @_;
-    my %Templates;
     my $QueueID = $Param{QueueID} || '';
+    my $ServiceID = $Param{ServiceID} || '';
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
     my $QueueObject  = $Kernel::OM->Get('Kernel::System::Queue');
+    my $ServiceObject  = $Kernel::OM->Get('Kernel::System::Service');
 
-    if ( !$QueueID ) {
-        my $UserDefaultQueue = $ConfigObject->Get('Ticket::Frontend::UserDefaultQueue') || '';
+    my $ReferenceAttribute = $ConfigObject->Get('CustomerTemplate::ReferenceAttribute') || '';
+    my %AvailableStandardTemplates;
+    if ($ReferenceAttribute eq 'queue') {
 
-        if ($UserDefaultQueue) {
-            $QueueID = $QueueObject->QueueLookup( Queue => $UserDefaultQueue );
+        # check needed
+        return {} if !$QueueID && !$Param{TicketID};
+
+        if ( !$QueueID && $Param{TicketID} ) {
+            # get QueueID from the ticket
+            my %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
+                TicketID      => $Param{TicketID},
+                DynamicFields => 0,
+                UserID        => $Self->{UserID},
+            );
+            $QueueID = $Ticket{QueueID} || '';
         }
-    }
 
-    # check needed
-    return \%Templates if !$QueueID && !$Param{TicketID};
+        return {} if !$QueueID;
 
-    if ( !$QueueID && $Param{TicketID} ) {
-
-        # get QueueID from the ticket
-        my %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
-            TicketID      => $Param{TicketID},
-            DynamicFields => 0,
-            UserID        => $Self->{UserID},
+        # fetch all std. templates
+        %AvailableStandardTemplates = $QueueObject->QueueStandardTemplateMemberList(
+            QueueID       => $QueueID,
+            TemplateTypes => 1,
         );
-        $QueueID = $Ticket{QueueID} || '';
     }
+    elsif ($ReferenceAttribute eq 'service') {
 
-    # fetch all std. templates
-    my %StandardTemplates = $QueueObject->QueueStandardTemplateMemberList(
-        QueueID       => $QueueID,
-        TemplateTypes => 1,
-    );
+        # check needed
+        return {} if !$ServiceID && !$Param{TicketID};
+
+        if ( !$ServiceID && $Param{TicketID} ) {
+            # get ServiceID from the ticket
+            my %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
+                TicketID      => $Param{TicketID},
+                DynamicFields => 0,
+                UserID        => $Self->{UserID},
+            );
+            $ServiceID = $Ticket{ServiceID} || '';
+        }
+
+        return {} if !$ServiceID;
+
+        # fetch all std. templates
+        %AvailableStandardTemplates = $ServiceObject->ServiceStandardTemplateMemberList(
+            ServiceID       => $ServiceID,
+            TemplateTypes => 1,
+        );
+    }
+    else {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Can't fetch standard templates list! Invalid reference attribute '$ReferenceAttribute'",
+        );
+        return;
+    }
 
     # return empty hash if there are no templates for this screen
-    return \%Templates if !IsHashRefWithData( $StandardTemplates{CustomerAnswer} );
+    return {} if !IsHashRefWithData( $AvailableStandardTemplates{CustomerAnswer} );
 
     # return just the templates for this screen
-    return $StandardTemplates{CustomerAnswer};
+    return $AvailableStandardTemplates{CustomerAnswer};
 }
 
 sub _MaskNew {
@@ -2944,7 +2969,7 @@ sub _MaskNew {
         }
     }
 
-        # prepare errors
+    # prepare errors
     if ( $Param{Errors} ) {
         for ( sort keys %{ $Param{Errors} } ) {
             $Param{$_} = $Param{Errors}->{$_};
@@ -2984,7 +3009,7 @@ sub _MaskNew {
         $Param{BodyValidate}    = 'Validate_Required_IfVisible';
     }
 
-    # check if exists customer create templates regardless the queue
+    # check if exists customer answer templates regardless the queue and the service
     my %StandardTemplates = $Kernel::OM->Get('Kernel::System::StandardTemplate')->StandardTemplateList(
         Valid => 1,
         Type  => 'CustomerAnswer',
@@ -2993,7 +3018,7 @@ sub _MaskNew {
     # build text template string
     if ( IsHashRefWithData( \%StandardTemplates ) ) {
         $Param{StandardTemplateStrg} = $LayoutObject->BuildSelection(
-            Data         => {},
+            Data         => { 1 => 'SSSSSSSSSSSSSS'},
             Name         => 'StandardTemplateID',
             SelectedID   => $Param{StandardTemplateID} || '',
             Class        => 'Modernize',
