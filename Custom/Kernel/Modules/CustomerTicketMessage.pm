@@ -128,21 +128,25 @@ sub new {
             FieldID => 'TypeID',
             Method  => \&_GetTypes
         },
+# Rother OSS / CustomerTemplate
         {
             FieldID => 'StandardTemplateID',
             Method  => \&_GetStandardTemplates
         },
+# EO CustomerTemplate
     ];
 
     # dependancies of standard fields which are not defined via ACLs
     $Self->{InternalDependancy} = {
         ServiceID => {
             SLAID => 1,
+# Rother OSS / CustomerTemplate
             StandardTemplateID => 1,
         },
         Dest => {
             StandardTemplateID => 1,
         },
+# EO CustomerTemplate
     };
 
     return $Self;
@@ -154,7 +158,9 @@ sub Run {
     # get params
     my %GetParam;
     my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
+# Rother OSS / CustomerTemplate
     for my $Key (qw( Subject Body PriorityID TypeID ServiceID SLAID Dest FromChatID StandardTemplateID)) {
+# EO CustomerTemplate
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
     }
 
@@ -221,6 +227,7 @@ sub Run {
     }
 
     if ( !$Self->{Subaction} ) {
+
         #Get default Queue ID if none is set
         my $QueueDefaultID;
         if ( !$GetParam{Dest} ) {
@@ -253,7 +260,17 @@ sub Run {
             }
         }
 
-        my $Autoselect = $ConfigObject->Get('TicketACL::CustomerAutoselect') || undef;
+        my $Autoselect = $ConfigObject->Get('TicketACL::Autoselect') || undef;
+
+# Rother OSS / CustomerTemplate
+        # fetch template autoselection from a separate checkbox config option
+        my $AutoselectStandardTemplates = $ConfigObject->Get('CustomerTemplate::Autoselect') || undef;
+
+        # if checked, assume mode 2 (autoselect and hide) and add to the autoselection list
+        if ($AutoselectStandardTemplates) {
+            $Autoselect->{StandardTemplateID} = $AutoselectStandardTemplates * 2;
+        }
+# EO CustomerTemplate        
 
         # gather fields which are supposed to be hidden when autoselected
         my $HideAutoselectedJSON;
@@ -319,7 +336,9 @@ sub Run {
                     ServiceID  => 'ServiceID',
                     SLAID      => 'SLAID',
                     TypeID     => 'TypeID',
+# Rother OSS / CustomerTemplate
                     StandardTemplateID     => 'StandardTemplateID',
+# EO CustomerTemplate                    
                 );
                 if ( $ACLPreselection && !$InitialRun ) {
                     FIELD:
@@ -367,7 +386,9 @@ sub Run {
                         %GetParam,
                         CustomerUserID => $Self->{UserID},
                         QueueID        => $GetParam{QueueID},
+# Rother OSS / CustomerTemplate
                         ServiceID        => $GetParam{ServiceID},
+# EO CustomerTemplate                        
                         Services       => $StdFieldValues{ServiceID} || undef,    # needed for SLAID
                     );
 
@@ -1096,7 +1117,6 @@ sub Run {
         $GetParam{Dest} = $ParamObject->GetParam( Param => 'Dest' ) || '';
         my $CustomerUser   = $Self->{UserID};
         my $ElementChanged = $ParamObject->GetParam( Param => 'ElementChanged' ) || '';
-
         $GetParam{QueueID} = '';
         if ( $GetParam{Dest} =~ /^(\d{1,100})\|\|.+?$/ ) {
             $GetParam{QueueID} = $1;
@@ -1108,7 +1128,17 @@ sub Run {
             $TreeView = 1;
         }
 
-        my $Autoselect = $ConfigObject->Get('TicketACL::CustomerAutoselect') || undef;
+        my $Autoselect = $ConfigObject->Get('TicketACL::Autoselect') || undef;
+
+# Rother OSS / CustomerTemplate                        
+        # fetch template autoselection from a separate checkbox config option
+        my $AutoselectStandardTemplates = $ConfigObject->Get('CustomerTemplate::Autoselect') || undef;
+
+        # if checked, assume mode 2 (autoselect and hide) and add to the autoselection list
+        if ($AutoselectStandardTemplates) {
+            $Autoselect->{StandardTemplateID} = $AutoselectStandardTemplates * 2;
+        }
+# EO CustomerTemplate
 
         # track changing standard fields
         my $ACLPreselection;
@@ -1152,6 +1182,7 @@ sub Run {
 
             # determine standard field input
             until ( $Convergence{StdFields} ) {
+
                 my %NewChangedElements;
 
                 # which standard fields to check - FieldID => GetParamValue (neccessary for Dest)
@@ -1161,7 +1192,9 @@ sub Run {
                     ServiceID  => 'ServiceID',
                     SLAID      => 'SLAID',
                     TypeID     => 'TypeID',
+# Rother OSS / CustomerTemplate
                     StandardTemplateID     => 'StandardTemplateID',
+# EO CustomerTemplate
                 );
                 if ($ACLPreselection) {
                     FIELD:
@@ -1204,7 +1237,6 @@ sub Run {
                     next METHOD if !$Check{ $Field->{FieldID} };
 
                     # use $Check{ $Field->{FieldID} } for Dest=>QueueID
-
                     $StdFieldValues{ $Check{ $Field->{FieldID} } } = $Field->{Method}->(
                         $Self,
                         %GetParam,
@@ -1337,7 +1369,7 @@ sub Run {
             }
 
         }
-        
+
         # update Dynamic Fields Possible Values via AJAX
         my @DynamicFieldAJAX;
 
@@ -1519,11 +1551,13 @@ sub Run {
                 Translation  => 1,
                 Max          => 100,
             },
+# Rother OSS / CustomerTemplate            
             StandardTemplateID => {
                 PossibleNone => 1,
                 Translation  => 1,
                 Max          => 100,
             },
+# EO CustomerTemplate            
         );
         delete $StdFieldValues{QueueID};
         for my $Field ( sort keys %StdFieldValues ) {
@@ -1534,7 +1568,7 @@ sub Run {
                 %{ $Attributes{$Field} },
             };
         }
-
+# Rother OSS / CustomerTemplate
         my @TemplateAJAX;
         my $UploadCacheObject = $Kernel::OM->Get('Kernel::System::Web::UploadCache');
 
@@ -1613,12 +1647,14 @@ sub Run {
                 },
             );
         }
-
+# EO CustomerTemplate
         my $JSON = $LayoutObject->BuildSelectionJSON(
             [
                 @StdFieldAJAX,
                 @DynamicFieldAJAX,
+# Rother OSS / CustomerTemplate                
                 @TemplateAJAX,
+# EO CustomerTemplate                
             ],
         );
 
@@ -1763,6 +1799,7 @@ sub _GetTos {
     return \%NewTos;
 }
 
+# Rother OSS / CustomerTemplate
 sub _GetStandardTemplates {
     my ( $Self, %Param ) = @_;
     my $QueueID = $Param{QueueID} || '';
@@ -1831,6 +1868,7 @@ sub _GetStandardTemplates {
     # return just the templates for this screen
     return $StandardTemplates{CustomerCreate};
 }
+# EO CustomerTemplate
 
 sub _MaskNew {
     my ( $Self, %Param ) = @_;
@@ -2042,7 +2080,7 @@ sub _MaskNew {
         }
     }
 
-        # prepare errors
+    # prepare errors
     if ( $Param{Errors} ) {
         for ( sort keys %{ $Param{Errors} } ) {
             $Param{$_} = $Param{Errors}->{$_};
@@ -2082,6 +2120,7 @@ sub _MaskNew {
         $Param{BodyValidate}    = 'Validate_Required_IfVisible';
     }
 
+# Rother OSS / CustomerTemplate
     # check if exists customer create templates regardless the queue and the service
     my %StandardTemplates = $Kernel::OM->Get('Kernel::System::StandardTemplate')->StandardTemplateList(
         Valid => 1,
@@ -2109,6 +2148,7 @@ sub _MaskNew {
             Data => {%Param},
         );
     }
+# EO CustomerTemplate
 
     # show attachments
     ATTACHMENT:

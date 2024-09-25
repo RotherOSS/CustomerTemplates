@@ -1322,6 +1322,7 @@ sub GetAllCustomServices {
     return @ServiceIDs;
 }
 
+# Rother OSS / CustomerTemplate
 =head2 ServiceStandardTemplateMemberList()
 
 get standard responses of a service
@@ -1525,5 +1526,6 @@ sub ServiceStandardTemplateMemberAdd {
     );
     return $Success;
 }
+# EO CustomerTemplate
 
 1;

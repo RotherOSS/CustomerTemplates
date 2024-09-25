@@ -18,7 +18,9 @@
         <h1>[% Translate("Issue a new Ticket") | html %]</h1>
     </div>
     <div id="oooMainBox" class="Content">
-        <form action="[% Env("CGIHandle") %]" method="post" name="compose" id="NewCustomerTicket" enctype="multipart/form-data" class="Validate PreventMultipleSubmits">
+# Rother OSS / CustomerTemplate    
+        <form action="[% Env("CGIHandle") %]" method="post" name="compose" id="CustomerTicket" enctype="multipart/form-data" class="Validate PreventMultipleSubmits">
+# EO CustomerTemplate        
             <input type="hidden" name="Action" value="[% Env("Action") %]" />
             <input type="hidden" name="Subaction" value="StoreNew" />
             <input type="hidden" name="Expand" id="Expand" value="" />
@@ -147,14 +149,16 @@
                     <div class="Clear"></div>
                 </div>
 
+# Rother OSS / CustomerTemplate
 [% RenderBlockStart("StandardTemplate") %]
                 <div class="Row">
                     [% Data.StandardTemplateStrg %]
-                   <label for="StandardTemplateID" title="[% Translate("New ticket template") | html %]">[% Translate("Text Template") | html %]:</label>
-                    <p class="FieldExplanation">[% Translate("Setting a template will overwrite any text or attachment.") | html %]</p>
+                    <label for="StandardTemplateID" title="[% Translate("New ticket template") | html %]">[% Translate("Text Template") | html %]:</label>
+                    <p class="FieldExplanation" style="margin-left:10%">[% Translate("Setting a template will overwrite any text or attachment.") | html %]</p>
                     <div class="Clear"></div>
                 </div>
 [% RenderBlockEnd("StandardTemplate") %]
+# EO CustomerTemplate
                 <div class="RichTextHolder RichTextField [% Data.BodyHiddenClass | html %]">
                     <textarea id="RichText" class="RichText [% Data.BodyValidate | html %] [% Data.BodyInvalid | html %]" name="Body" rows="15" cols="[% Config("Ticket::Frontend::TextAreaNote") %]">[% Data.Body | html %]</textarea>
                     <label for="RichText" class="Mandatory">

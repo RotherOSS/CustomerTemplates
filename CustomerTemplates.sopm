@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<otobo_package version="1.1">
+    <Name>CustomerTemplates</Name>
+    <Version>11.0.0</Version>
+    <Vendor>Rother OSS GmbH</Vendor>
+    <URL>https://rother-oss.com/</URL>
+    <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
+    <Description Lang="en">Provides the Customer interface with the standard templates feature.</Description>
+    <Framework>11.0.x</Framework>
+    <Filelist>
+        <File Permission="644" Location="Kernel/Config/Files/XML/CustomerTemplate.xml" />
+        <File Permission="644" Location="Kernel/Modules/AdminServiceTemplates.pm" />
+        <File Permission="644" Location="Custom/Kernel/Modules/CustomerTicketMessage.pm" />
+        <File Permission="644" Location="Custom/Kernel/Modules/CustomerTicketZoom.pm" />
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AdminServiceTemplates.tt" />
+        <File Permission="644" Location="Custom/Kernel/Output/HTML/Templates/Standard/CustomerTicketMessage.tt" />
+        <File Permission="644" Location="Custom/Kernel/Output/HTML/Templates/Standard/CustomerTicketZoom.tt" />
+        <File Permission="644" Location="Custom/Kernel/System/Service.pm" />
+        <File Permission="644" Location="var/httpd/htdocs/js/Core.Agent.Admin.ServiceTemplates.js" />
+        <File Permission="644" Location="var/httpd/htdocs/js/Core.Customer.TicketAction.js" />
+    </Filelist>
+    <DatabaseInstall Type="post">
+        <TableCreate Name="service_standard_template">
+            <Column Name="service_id" PrimaryKey="true" Required="true" Type="INTEGER" />
+            <Column Name="customer_template_id" PrimaryKey="true" Required="true" Type="INTEGER" />
+            <Column Name="create_time" Required="true" Type="DATE" />
+            <Column Name="create_by" Required="true" Type="INTEGER" />
+            <Column Name="change_time" Required="true" Type="DATE" />
+            <Column Name="change_by" Required="true" Type="INTEGER" />
+            <Index Name="service_standard_template_service_id">
+                <IndexColumn Name="service_id" />
+            </Index>
+            <Index Name="service_standard_template_standard_template_id">
+                <IndexColumn Name="standard_template_id" />
+            </Index>
+            <ForeignKey ForeignTable="service">
+                <Reference Local="service_id" Foreign="id" />
+            </ForeignKey>
+            <ForeignKey ForeignTable="standard_template">
+                <Reference Local="standard_template_id" Foreign="id" />
+            </ForeignKey>
+            <ForeignKey ForeignTable="users">
+                <Reference Local="create_by" Foreign="id" />
+                <Reference Local="change_by" Foreign="id" />
+            </ForeignKey>
+        </TableCreate>
+    </DatabaseInstall>
+    <DatabaseUninstall Type="pre">
+        <TableDrop Name="service_standard_template" />
+    </DatabaseUninstall>
+</otobo_package>
+
