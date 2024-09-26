@@ -22,8 +22,8 @@
     </Filelist>
     <DatabaseInstall Type="post">
         <TableCreate Name="service_standard_template">
-            <Column Name="service_id" PrimaryKey="true" Required="true" Type="INTEGER" />
-            <Column Name="customer_template_id" PrimaryKey="true" Required="true" Type="INTEGER" />
+            <Column Name="service_id" Required="true" Type="INTEGER" />
+            <Column Name="customer_template_id" Required="true" Type="INTEGER" />
             <Column Name="create_time" Required="true" Type="DATE" />
             <Column Name="create_by" Required="true" Type="INTEGER" />
             <Column Name="change_time" Required="true" Type="DATE" />
