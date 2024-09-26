@@ -33,7 +33,7 @@ Core.Agent.TicketAction = (function (TargetNS) {
      * @memberof Core.Agent.TicketAction
      * @function
      * @description
-     *      This function sets customer ticket events.
+     *      This function sets customer template related events.
      */
     TargetNS.Init = function () {
         // change standard template
