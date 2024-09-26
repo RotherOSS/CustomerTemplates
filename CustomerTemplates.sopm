@@ -12,6 +12,7 @@
         <File Permission="644" Location="Kernel/Modules/AdminServiceTemplates.pm" />
         <File Permission="644" Location="Custom/Kernel/Modules/CustomerTicketMessage.pm" />
         <File Permission="644" Location="Custom/Kernel/Modules/CustomerTicketZoom.pm" />
+        <File Permission="644" Location="Custom/Kernel/Modules/AdminTemplate.pm" />
         <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AdminServiceTemplates.tt" />
         <File Permission="644" Location="Custom/Kernel/Output/HTML/Templates/Standard/CustomerTicketMessage.tt" />
         <File Permission="644" Location="Custom/Kernel/Output/HTML/Templates/Standard/CustomerTicketZoom.tt" />
