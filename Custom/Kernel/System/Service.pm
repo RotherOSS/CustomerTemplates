@@ -2,7 +2,7 @@
 # OTOBO is a web-based ticketing system for service organisations.
 # --
 # Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
-# Copyright (C) 2019-2024 Rother OSS GmbH, https://otobo.io/
+# Copyright (C) 2019-2024 Rother OSS GmbH, https://otobo.de/
 # --
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -1323,6 +1323,7 @@ sub GetAllCustomServices {
 }
 
 # Rother OSS / CustomerTemplate
+
 =head2 ServiceStandardTemplateMemberList()
 
 get standard responses of a service
@@ -1358,8 +1359,6 @@ Returns:
     );
 
 =cut
-
-use Data::Dumper;
 
 sub ServiceStandardTemplateMemberList {
     my ( $Self, %Param ) = @_;
@@ -1400,7 +1399,7 @@ sub ServiceStandardTemplateMemberList {
             . " qst.standard_template_id = st.id AND "
             . " st.valid_id IN ( ${\(join ', ', $ValidObject->ValidIDsGet())} )"
             . " ORDER BY st.name";
-        
+
         return if !$DBObject->Prepare( SQL => $SQL );
 
         # fetch the result
@@ -1526,6 +1525,7 @@ sub ServiceStandardTemplateMemberAdd {
     );
     return $Success;
 }
+
 # EO CustomerTemplate
 
 1;

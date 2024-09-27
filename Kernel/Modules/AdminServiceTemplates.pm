@@ -2,7 +2,7 @@
 # OTOBO is a web-based ticketing system for service organisations.
 # --
 # Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
-# Copyright (C) 2019-2024 Rother OSS GmbH, https://otobo.io/
+# Copyright (C) 2019-2024 Rother OSS GmbH, https://otobo.de/
 # --
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -35,14 +35,12 @@ sub new {
     return $Self;
 }
 
-use Data::Dumper;
-
 sub Run {
     my ( $Self, %Param ) = @_;
 
     my $ParamObject            = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $LayoutObject           = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $ServiceObject            = $Kernel::OM->Get('Kernel::System::Service');
+    my $ServiceObject          = $Kernel::OM->Get('Kernel::System::Service');
     my $StandardTemplateObject = $Kernel::OM->Get('Kernel::System::StandardTemplate');
 
     # ------------------------------------------------------------ #
@@ -55,8 +53,8 @@ sub Run {
         my %StandardTemplateData = $StandardTemplateObject->StandardTemplateGet( ID => $ID );
 
         # get services
-        my %ServiceData = $ServiceObject->ServiceList( 
-            Valid => 1,
+        my %ServiceData = $ServiceObject->ServiceList(
+            Valid  => 1,
             UserID => $Self->{UserID},
         );
 
@@ -82,11 +80,11 @@ sub Run {
             }
 
             # Check the permission.
-            my %Services     = $ServiceObject->ServiceStandardTemplateMemberList( StandardTemplateID => $ID );
+            my %Services   = $ServiceObject->ServiceStandardTemplateMemberList( StandardTemplateID => $ID );
             my $Permission = $ServiceObject->ServiceListPermission(
                 ServiceIDs => [ keys %Services ],
-                UserID   => $Self->{UserID},
-                Default  => 'rw',
+                UserID     => $Self->{UserID},
+                Default    => 'rw',
             );
 
             if ( $Permission ne 'rw' ) {
@@ -115,10 +113,10 @@ sub Run {
     elsif ( $Self->{Subaction} eq 'Service' ) {
 
         # get service data
-        my $ID        = $ParamObject->GetParam( Param => 'ID' );
-        my %ServiceData = $ServiceObject->ServiceGet( 
+        my $ID          = $ParamObject->GetParam( Param => 'ID' );
+        my %ServiceData = $ServiceObject->ServiceGet(
             ServiceID => $ID,
-            UserID => $Self->{UserID},
+            UserID    => $Self->{UserID},
         );
 
         # get templates
@@ -146,11 +144,11 @@ sub Run {
 
             # Filter out templates without permission.
             for my $StandardTemplateID ( keys %StandardTemplateData ) {
-                my %Services     = $ServiceObject->ServiceStandardTemplateMemberList( StandardTemplateID => $StandardTemplateID );
+                my %Services   = $ServiceObject->ServiceStandardTemplateMemberList( StandardTemplateID => $StandardTemplateID );
                 my $Permission = $ServiceObject->ServiceListPermission(
                     ServiceIDs => [ keys %Services ],
-                    UserID   => $Self->{UserID},
-                    Default  => 'rw',
+                    UserID     => $Self->{UserID},
+                    Default    => 'rw',
                 );
                 if ( $Permission ne 'rw' ) {
                     delete $StandardTemplateData{$StandardTemplateID};
@@ -204,11 +202,11 @@ sub Run {
             for my $StandardTemplateID ( keys %TemplatesSelected ) {
                 next ID if !$StandardTemplateID;    # Can contain empty string.
 
-                my %Services     = $ServiceObject->ServiceStandardTemplateMemberList( StandardTemplateID => $StandardTemplateID );
+                my %Services   = $ServiceObject->ServiceStandardTemplateMemberList( StandardTemplateID => $StandardTemplateID );
                 my $Permission = $ServiceObject->ServiceListPermission(
                     ServiceIDs => [ keys %Services ],
-                    UserID   => $Self->{UserID},
-                    Default  => 'rw',
+                    UserID     => $Self->{UserID},
+                    Default    => 'rw',
                 );
                 if ( $Permission ne 'rw' ) {
                     return $LayoutObject->Redirect(
@@ -224,7 +222,7 @@ sub Run {
 
             # set customer user service member
             $ServiceObject->ServiceStandardTemplateMemberAdd(
-                ServiceID            => $ServiceID,
+                ServiceID          => $ServiceID,
                 StandardTemplateID => $TemplateID,
                 Active             => $Active,
                 UserID             => $Self->{UserID},
@@ -289,7 +287,7 @@ sub Run {
 
             # set customer user service member
             $ServiceObject->ServiceStandardTemplateMemberAdd(
-                ServiceID            => $ServiceID,
+                ServiceID          => $ServiceID,
                 StandardTemplateID => $TemplateID,
                 Active             => $Active,
                 UserID             => $Self->{UserID},
@@ -333,7 +331,7 @@ sub _Change {
 
     my %VisibleType = (
         Template => 'Template',
-        Service    => 'Service',
+        Service  => 'Service',
     );
 
     my $MyType       = $VisibleType{$Type};
@@ -369,7 +367,7 @@ sub _Change {
             NeType          => $NeType,
             VisibleType     => $VisibleType{$Type},
             VisibleNeType   => $VisibleType{$NeType},
-            Service           => $ServiceTag,
+            Service         => $ServiceTag,
             BreadcrumbTitle => $BreadcrumbTitle,
         },
     );
@@ -413,7 +411,7 @@ sub _Change {
                 Selected      => $Selected,
                 VisibleType   => $VisibleType{$Type},
                 VisibleNeType => $VisibleType{$NeType},
-                Service         => $ServiceTag,
+                Service       => $ServiceTag,
             },
         );
     }
@@ -428,8 +426,8 @@ sub _Change {
 sub _Overview {
     my ( $Self, %Param ) = @_;
 
-    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $ServiceObject  = $Kernel::OM->Get('Kernel::System::Service');
+    my $LayoutObject  = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $ServiceObject = $Kernel::OM->Get('Kernel::System::Service');
 
     $LayoutObject->Block(
         Name => 'Overview',
@@ -466,11 +464,11 @@ sub _Overview {
             )
         {
             if ( $Self->{LightAdmin} ) {
-                my %Services     = $ServiceObject->ServiceStandardTemplateMemberList( StandardTemplateID => $StandardTemplateID );
+                my %Services   = $ServiceObject->ServiceStandardTemplateMemberList( StandardTemplateID => $StandardTemplateID );
                 my $Permission = $ServiceObject->ServiceListPermission(
                     ServiceIDs => [ keys %Services ],
-                    UserID   => $Self->{UserID},
-                    Default  => 'rw',
+                    UserID     => $Self->{UserID},
+                    Default    => 'rw',
                 );
                 if ( $Permission ne 'rw' ) {
                     next ID;
@@ -498,7 +496,10 @@ sub _Overview {
     }
 
     # get service data
-    my %ServiceData = $Kernel::OM->Get('Kernel::System::Service')->ServiceList( Valid => 1, UserID => $Self->{UserID} );
+    my %ServiceData = $Kernel::OM->Get('Kernel::System::Service')->ServiceList(
+        Valid  => 1,
+        UserID => $Self->{UserID}
+    );
 
     if ( $Self->{LightAdmin} ) {
 

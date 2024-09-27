@@ -2,7 +2,7 @@
 # OTOBO is a web-based ticketing system for service organisations.
 # --
 # Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
-# Copyright (C) 2019-2024 Rother OSS GmbH, https://otobo.io/
+# Copyright (C) 2019-2024 Rother OSS GmbH, https://otobo.de/
 # --
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -22,15 +22,13 @@ use warnings;
 
 # core modules
 use Digest::MD5 qw(md5_hex);
-use List::Util  qw(any);
+use List::Util qw(any);
 
 # CPAN modules
 
 # OTOBO modules
-use Kernel::Language              qw(Translatable);
+use Kernel::Language qw(Translatable);
 use Kernel::System::VariableCheck qw(:all);
-
-use Data::Dumper;
 
 our $ObjectManagerDisabled = 1;
 
@@ -123,12 +121,14 @@ sub new {
             FieldID => 'NextStateID',
             Method  => \&_GetNextStates
         },
-# Rother OSS / CustomerTemplate        
+
+        # Rother OSS / CustomerTemplate
         {
             FieldID => 'StandardTemplateID',
             Method  => \&_GetStandardTemplates
         },
-# EO CustomerTemplate        
+
+        # EO CustomerTemplate
     ];
 
     # dependancies of standard fields which are not defined via ACLs - here for consistency
@@ -326,9 +326,11 @@ sub Run {
     }
 
     my %GetParam;
-# Rother OSS / CustomerTemplate    
+
+    # Rother OSS / CustomerTemplate
     for my $Key (qw(Subject Body StateID PriorityID FromChatID FromChat ServiceID StandardTemplateID)) {
-# EO CustomerTemplate        
+
+        # EO CustomerTemplate
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
     }
 
@@ -409,9 +411,9 @@ sub Run {
         }
 
         my $FieldRestrictionsObject = $Kernel::OM->Get('Kernel::System::Ticket::FieldRestrictions');
-        my $Autoselect = $ConfigObject->Get('TicketACL::Autoselect') || undef;
+        my $Autoselect              = $ConfigObject->Get('TicketACL::Autoselect') || undef;
 
-# Rother OSS / CustomerTemplate
+        # Rother OSS / CustomerTemplate
         # fetch template autoselection from a separate checkbox config option
         my $AutoselectStandardTemplates = $ConfigObject->Get('CustomerTemplate::Autoselect') || undef;
 
@@ -419,7 +421,8 @@ sub Run {
         if ($AutoselectStandardTemplates) {
             $Autoselect->{StandardTemplateID} = $AutoselectStandardTemplates * 2;
         }
-# EO CustomerTemplate
+
+        # EO CustomerTemplate
 
         # track changing standard fields
         my $ACLPreselection;
@@ -470,9 +473,11 @@ sub Run {
                 my %Check = (
                     NextStateID => 'NextStateID',
                     PriorityID  => 'PriorityID',
-# Rother OSS / CustomerTemplate                    
-                    StandardTemplateID  => 'StandardTemplateID',
-# EO CustomerTemplate                    
+
+                    # Rother OSS / CustomerTemplate
+                    StandardTemplateID => 'StandardTemplateID',
+
+                    # EO CustomerTemplate
                 );
                 if ($ACLPreselection) {
                     FIELD:
@@ -778,12 +783,14 @@ sub Run {
                 Translation => 1,
                 Max         => 100,
             },
-# Rother OSS / CustomerTemplate            
+
+            # Rother OSS / CustomerTemplate
             StandardTemplateID => {
                 Translation => 1,
                 Max         => 100,
             },
-# EO CustomerTemplate            
+
+            # EO CustomerTemplate
         );
         my %Diversity = reverse %Uniformity;
         for my $Field ( sort keys %StdFieldValues ) {
@@ -795,7 +802,7 @@ sub Run {
             };
         }
 
-# Rother OSS / CustomerTemplate
+        # Rother OSS / CustomerTemplate
         my @TemplateAJAX;
         my $UploadCacheObject = $Kernel::OM->Get('Kernel::System::Web::UploadCache');
 
@@ -873,15 +880,18 @@ sub Run {
                 },
             );
         }
-# EO CustomerTemplate
+
+        # EO CustomerTemplate
 
         my $JSON = $LayoutObject->BuildSelectionJSON(
             [
                 @StdFieldAJAX,
                 @DynamicFieldAJAX,
-# Rother OSS / CustomerTemplate                
+
+                # Rother OSS / CustomerTemplate
                 @TemplateAJAX,
-# Rother OSS / CustomerTemplate                
+
+                # Rother OSS / CustomerTemplate
             ],
         );
 
@@ -1418,17 +1428,19 @@ sub Run {
     }
 
     my $FieldRestrictionsObject = $Kernel::OM->Get('Kernel::System::Ticket::FieldRestrictions');
-# Rother OSS / CustomerTemplate    
+
+    # Rother OSS / CustomerTemplate
     my $Autoselect = $ConfigObject->Get('TicketACL::Autoselect') || undef;
 
     # fetch template autoselection from a separate checkbox config option
     my $AutoselectStandardTemplates = $ConfigObject->Get('CustomerTemplate::Autoselect') || undef;
-    
+
     # if checked, assume mode 2 (autoselect and hide) and add to the autoselection list
     if ($AutoselectStandardTemplates) {
         $Autoselect->{StandardTemplateID} = $AutoselectStandardTemplates * 2;
     }
-# EO CustomerTemplate    
+
+    # EO CustomerTemplate
 
     # gather fields which are supposed to be hidden when autoselected
     my $HideAutoselectedJSON;
@@ -1491,9 +1503,11 @@ sub Run {
             my %Check = (
                 NextStateID => 'NextStateID',
                 PriorityID  => 'PriorityID',
-# Rother OSS / CustomerTemplate                
-                StandardTemplateID  => 'StandardTemplateID',
-# EO CustomerTemplate                
+
+                # Rother OSS / CustomerTemplate
+                StandardTemplateID => 'StandardTemplateID',
+
+                # EO CustomerTemplate
             );
             if ( $ACLPreselection && !$InitialRun ) {
                 FIELD:
@@ -2547,7 +2561,7 @@ sub _Mask {
             Data => \%Param,
         );
 
-# Rother OSS / CustomerTemplate
+        # Rother OSS / CustomerTemplate
         # check if exists customer answer templates regardless the queue and the service
         my %StandardTemplates = $Kernel::OM->Get('Kernel::System::StandardTemplate')->StandardTemplateList(
             Valid => 1,
@@ -2556,6 +2570,7 @@ sub _Mask {
 
         # build text template string
         if ( IsHashRefWithData( \%StandardTemplates ) ) {
+
             # fetch all available std. templates
             my $AvailableStandardTemplates = $Self->_GetStandardTemplates(
                 %Param,
@@ -2575,7 +2590,8 @@ sub _Mask {
                 Data => {%Param},
             );
         }
-# EO CustomerTemplate
+
+        # EO CustomerTemplate
 
         # add rich text editor
         if ( $LayoutObject->{BrowserRichText} ) {
@@ -2725,20 +2741,21 @@ sub _Mask {
 # Rother OSS / CustomerTemplate
 sub _GetStandardTemplates {
     my ( $Self, %Param ) = @_;
-    my $QueueID = $Param{QueueID} || '';
-    my $ServiceID = $Param{ServiceID} || '';
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $QueueObject  = $Kernel::OM->Get('Kernel::System::Queue');
-    my $ServiceObject  = $Kernel::OM->Get('Kernel::System::Service');
+    my $QueueID       = $Param{QueueID}   || '';
+    my $ServiceID     = $Param{ServiceID} || '';
+    my $ConfigObject  = $Kernel::OM->Get('Kernel::Config');
+    my $QueueObject   = $Kernel::OM->Get('Kernel::System::Queue');
+    my $ServiceObject = $Kernel::OM->Get('Kernel::System::Service');
 
     my $ReferenceAttribute = $ConfigObject->Get('CustomerTemplate::ReferenceAttribute') || '';
     my %AvailableStandardTemplates;
-    if ($ReferenceAttribute eq 'queue') {
+    if ( $ReferenceAttribute eq 'queue' ) {
 
         # check needed
         return {} if !$QueueID && !$Param{TicketID};
 
         if ( !$QueueID && $Param{TicketID} ) {
+
             # get QueueID from the ticket
             my %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
                 TicketID      => $Param{TicketID},
@@ -2756,12 +2773,13 @@ sub _GetStandardTemplates {
             TemplateTypes => 1,
         );
     }
-    elsif ($ReferenceAttribute eq 'service') {
+    elsif ( $ReferenceAttribute eq 'service' ) {
 
         # check needed
         return {} if !$ServiceID && !$Param{TicketID};
 
         if ( !$ServiceID && $Param{TicketID} ) {
+
             # get ServiceID from the ticket
             my %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
                 TicketID      => $Param{TicketID},
@@ -2775,7 +2793,7 @@ sub _GetStandardTemplates {
 
         # fetch all std. templates
         %AvailableStandardTemplates = $ServiceObject->ServiceStandardTemplateMemberList(
-            ServiceID       => $ServiceID,
+            ServiceID     => $ServiceID,
             TemplateTypes => 1,
         );
     }
@@ -2793,6 +2811,7 @@ sub _GetStandardTemplates {
     # return just the templates for this screen
     return $AvailableStandardTemplates{CustomerAnswer};
 }
+
 # EO CustomerTemplate
 
 1;
