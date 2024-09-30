@@ -1827,7 +1827,7 @@ sub _GetStandardTemplates {
     my $ServiceObject = $Kernel::OM->Get('Kernel::System::Service');
 
     my %StandardTemplates;
-    my $ReferenceAttribute = $ConfigObject->Get('CustomerTemplate::ReferenceAttribute') || '';
+    my $ReferenceAttribute = $ConfigObject->Get('CustomerTemplate::ReferenceAttribute') || 'queue';
     if ( $ReferenceAttribute eq 'queue' ) {
 
         # check needed

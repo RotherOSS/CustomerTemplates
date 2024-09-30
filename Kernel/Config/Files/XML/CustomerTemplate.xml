@@ -20,9 +20,8 @@
             <Hash>
                 <Item Key="CSS">
                     <Array>
-                        <!-- Item>Core.Process.css</Item-->
-                        <!-- Item>Core.Form.css</Item-->
-                        <!-- Item>Core.Reset.css</Item-->                        
+                        <Item>Core.Process.css</Item>
+                        <Item>Core.FieldExplanationRow.css</Item>
                     </Array>
                 </Item>
                 <Item Key="JavaScript">
