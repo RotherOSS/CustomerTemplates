@@ -1198,11 +1198,9 @@ sub Run {
                     ServiceID  => 'ServiceID',
                     SLAID      => 'SLAID',
                     TypeID     => 'TypeID',
-
-                    # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
                     StandardTemplateID => 'StandardTemplateID',
-
-                    # EO CustomerTemplate
+# EO CustomerTemplate
                 );
                 if ($ACLPreselection) {
                     FIELD:
