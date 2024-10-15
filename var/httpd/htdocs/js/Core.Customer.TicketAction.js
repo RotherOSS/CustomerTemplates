@@ -17,20 +17,20 @@
 "use strict";
 
 var Core = Core || {};
-Core.Agent = Core.Agent || {};
+Core.Customer = Core.Customer || {};
 
 /**
- * @namespace Core.Agent.TicketAction
- * @memberof Core.Agent
+ * @namespace Core.Customer.TicketAction
+ * @memberof Core.Customer
  * @author
  * @description
  *      This namespace contains functions for all ticket action popups.
  */
-Core.Agent.TicketAction = (function (TargetNS) {
+Core.Customer.TicketAction = (function (TargetNS) {
 
     /**
      * @name Init
-     * @memberof Core.Agent.TicketAction
+     * @memberof Core.Customer.TicketAction
      * @function
      * @description
      *      This function sets customer template related events.
@@ -38,8 +38,8 @@ Core.Agent.TicketAction = (function (TargetNS) {
     TargetNS.Init = function () {
         // change standard template
         $('#StandardTemplateID').on('change', function () {
-            Core.Agent.TicketAction.ConfirmTemplateOverwrite('RichText', $(this), function () {
-	        Core.AJAX.FormUpdate($('#CustomerTicket'), 'AJAXUpdate', 'StandardTemplateID');
+                TargetNS.ConfirmTemplateOverwrite('RichText', $(this), function () {
+                Core.AJAX.FormUpdate($('form[name="compose"').first(), 'AJAXUpdate', 'StandardTemplateID');
             });
             return false;
         });
@@ -51,7 +51,7 @@ Core.Agent.TicketAction = (function (TargetNS) {
 
     /**
      * @name ConfirmTemplateOverwrite
-     * @memberof Core.Agent.TicketAction
+     * @memberof Core.Customer.TicketAction
      * @function
      * @param {String} FieldName - The ID of the content field (textarea or RTE). ID without selector (#).
      * @param {jQueryObject} $TemplateSelect - Selector of the dropdown element for the template selection.
@@ -89,4 +89,4 @@ Core.Agent.TicketAction = (function (TargetNS) {
     Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');
 
     return TargetNS;
-}(Core.Agent.TicketAction || {}));
+}(Core.Customer.TicketAction || {}));

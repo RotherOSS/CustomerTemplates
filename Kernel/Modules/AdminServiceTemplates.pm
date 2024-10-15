@@ -120,8 +120,9 @@ sub Run {
         );
 
         # get templates
-        my %StandardTemplateData = $StandardTemplateObject->StandardTemplateList(
+        my %StandardTemplateData = $Self->_CustomerStandardTemplateList(
             Valid => 1,
+            Type  => ["CustomerCreate", "CustomerAnswer"],
         );
 
         if (%StandardTemplateData) {
@@ -443,8 +444,10 @@ sub _Overview {
     my $StandardTemplateObject = $Kernel::OM->Get('Kernel::System::StandardTemplate');
 
     # get std template list
-    my %StandardTemplateData = $StandardTemplateObject->StandardTemplateList(
+    my %StandardTemplateData = $Self->_CustomerStandardTemplateList(
         Valid => 1,
+        Type  => ["CustomerCreate", "CustomerAnswer"],
+
     );
 
     # if there are results to show
@@ -543,6 +546,53 @@ sub _Overview {
         TemplateFile => 'AdminServiceTemplates',
         Data         => \%Param,
     );
+}
+
+sub _CustomerStandardTemplateList {
+    my ( $Self, %Param ) = @_;
+
+    my $TemplateTypes = "'" . (join ',', @{$Param{Type}}) . "'";
+    $TemplateTypes =~ s/,/','/g;
+
+    my $Valid = 1;
+    if ( defined $Param{Valid} && $Param{Valid} eq '0' ) {
+        $Valid = 0;
+    }
+
+    my $SQL = '
+        SELECT id, name
+        FROM standard_template';
+
+    if ($Valid) {
+        $SQL .= ' WHERE valid_id IN (' . join ', ',
+            $Kernel::OM->Get('Kernel::System::Valid')->ValidIDsGet() . ')';
+    }
+
+    my @Bind;
+    if ( defined $Param{Type} && $Param{Type} ne '' ) {
+        if ($Valid) {
+            $SQL .= ' AND';
+        }
+        else {
+            $SQL .= ' WHERE';
+        }
+        $SQL .= " template_type IN ($TemplateTypes)";
+    }
+
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    return if !$DBObject->Prepare(
+        SQL  => $SQL,
+        Bind => \@Bind,
+    );
+
+    my %Data;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $Data{ $Row[0] } = $Row[1];
+    }
+
+    return %Data;
 }
 
 1;

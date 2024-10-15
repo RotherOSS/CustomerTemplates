@@ -88,9 +88,7 @@
 [% RenderBlockEnd("ProcessActivity") %]
 [% RenderBlockStart("FollowUp") %]
 <li id="FollowUp" class="[% Data.FollowUpVisible | html %] Activity">
-# Rother OSS / CustomerTemplate
-    <form action="[% Env("CGIHandle") %]#FollowUp" method="post" enctype="multipart/form-data" name="compose" id="CustomerTicket" class="Validate PreventMultipleSubmits">
-# EO CustomerTemplate    
+    <form action="[% Env("CGIHandle") %]#FollowUp" method="post" enctype="multipart/form-data" name="compose" id="ReplyCustomerTicket" class="Validate PreventMultipleSubmits">
         <input type="hidden" name="Action" value="CustomerTicketZoom" />
         <input type="hidden" name="Subaction" value="Store" />
         <input type="hidden" name="TicketID" value="[% Data.TicketID | html %]" />

@@ -122,13 +122,13 @@ sub new {
             Method  => \&_GetNextStates
         },
 
-        # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
         {
             FieldID => 'StandardTemplateID',
             Method  => \&_GetStandardTemplates
         },
 
-        # EO CustomerTemplate
+# EO CustomerTemplate
     ];
 
     # dependancies of standard fields which are not defined via ACLs - here for consistency
@@ -327,10 +327,12 @@ sub Run {
 
     my %GetParam;
 
-    # Rother OSS / CustomerTemplate
-    for my $Key (qw(Subject Body StateID PriorityID FromChatID FromChat ServiceID StandardTemplateID)) {
+# Rother OSS / CustomerTemplate
+#    for my $Key (qw(Subject Body StateID PriorityID FromChatID FromChat)) {
 
-        # EO CustomerTemplate
+    for my $Key (qw(Subject Body StateID PriorityID FromChatID FromChat ServiceID StandardTemplateID)) {
+# EO CustomerTemplate
+
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
     }
 
@@ -413,7 +415,7 @@ sub Run {
         my $FieldRestrictionsObject = $Kernel::OM->Get('Kernel::System::Ticket::FieldRestrictions');
         my $Autoselect              = $ConfigObject->Get('TicketACL::Autoselect') || undef;
 
-        # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
         # fetch template autoselection from a separate checkbox config option
         my $AutoselectStandardTemplates = $ConfigObject->Get('CustomerTemplate::Autoselect') || undef;
 
@@ -421,8 +423,7 @@ sub Run {
         if ($AutoselectStandardTemplates) {
             $Autoselect->{StandardTemplateID} = $AutoselectStandardTemplates * 2;
         }
-
-        # EO CustomerTemplate
+# EO CustomerTemplate
 
         # track changing standard fields
         my $ACLPreselection;
@@ -474,10 +475,9 @@ sub Run {
                     NextStateID => 'NextStateID',
                     PriorityID  => 'PriorityID',
 
-                    # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
                     StandardTemplateID => 'StandardTemplateID',
-
-                    # EO CustomerTemplate
+# EO CustomerTemplate
                 );
                 if ($ACLPreselection) {
                     FIELD:
@@ -783,14 +783,12 @@ sub Run {
                 Translation => 1,
                 Max         => 100,
             },
-
-            # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
             StandardTemplateID => {
                 Translation => 1,
                 Max         => 100,
             },
-
-            # EO CustomerTemplate
+# EO CustomerTemplate
         );
         my %Diversity = reverse %Uniformity;
         for my $Field ( sort keys %StdFieldValues ) {
@@ -802,7 +800,7 @@ sub Run {
             };
         }
 
-        # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
         my @TemplateAJAX;
         my $UploadCacheObject = $Kernel::OM->Get('Kernel::System::Web::UploadCache');
 
@@ -880,18 +878,15 @@ sub Run {
                 },
             );
         }
-
-        # EO CustomerTemplate
+# EO CustomerTemplate
 
         my $JSON = $LayoutObject->BuildSelectionJSON(
             [
                 @StdFieldAJAX,
                 @DynamicFieldAJAX,
-
-                # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
                 @TemplateAJAX,
-
-                # Rother OSS / CustomerTemplate
+# EO CustomerTemplate
             ],
         );
 
@@ -1428,10 +1423,9 @@ sub Run {
     }
 
     my $FieldRestrictionsObject = $Kernel::OM->Get('Kernel::System::Ticket::FieldRestrictions');
-
-    # Rother OSS / CustomerTemplate
     my $Autoselect = $ConfigObject->Get('TicketACL::Autoselect') || undef;
 
+# Rother OSS / CustomerTemplate
     # fetch template autoselection from a separate checkbox config option
     my $AutoselectStandardTemplates = $ConfigObject->Get('CustomerTemplate::Autoselect') || undef;
 
@@ -1439,8 +1433,7 @@ sub Run {
     if ($AutoselectStandardTemplates) {
         $Autoselect->{StandardTemplateID} = $AutoselectStandardTemplates * 2;
     }
-
-    # EO CustomerTemplate
+# EO CustomerTemplate
 
     # gather fields which are supposed to be hidden when autoselected
     my $HideAutoselectedJSON;
@@ -1503,11 +1496,9 @@ sub Run {
             my %Check = (
                 NextStateID => 'NextStateID',
                 PriorityID  => 'PriorityID',
-
-                # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
                 StandardTemplateID => 'StandardTemplateID',
-
-                # EO CustomerTemplate
+# EO CustomerTemplate
             );
             if ( $ACLPreselection && !$InitialRun ) {
                 FIELD:
@@ -2561,7 +2552,7 @@ sub _Mask {
             Data => \%Param,
         );
 
-        # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
         # check if exists customer answer templates regardless the queue and the service
         my %StandardTemplates = $Kernel::OM->Get('Kernel::System::StandardTemplate')->StandardTemplateList(
             Valid => 1,
@@ -2590,8 +2581,7 @@ sub _Mask {
                 Data => {%Param},
             );
         }
-
-        # EO CustomerTemplate
+# EO CustomerTemplate
 
         # add rich text editor
         if ( $LayoutObject->{BrowserRichText} ) {
@@ -2811,7 +2801,6 @@ sub _GetStandardTemplates {
     # return just the templates for this screen
     return $AvailableStandardTemplates{CustomerAnswer};
 }
-
 # EO CustomerTemplate
 
 1;

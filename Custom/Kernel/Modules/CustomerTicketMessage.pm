@@ -126,29 +126,25 @@ sub new {
             FieldID => 'TypeID',
             Method  => \&_GetTypes
         },
-
-        # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
         {
             FieldID => 'StandardTemplateID',
             Method  => \&_GetStandardTemplates
         },
-
-        # EO CustomerTemplate
+# EO CustomerTemplate
     ];
 
     # dependancies of standard fields which are not defined via ACLs
     $Self->{InternalDependancy} = {
         ServiceID => {
             SLAID => 1,
-
-            # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
             StandardTemplateID => 1,
         },
         Dest => {
             StandardTemplateID => 1,
         },
-
-        # EO CustomerTemplate
+# EO CustomerTemplate
     };
 
     return $Self;
@@ -161,10 +157,12 @@ sub Run {
     my %GetParam;
     my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
 
-    # Rother OSS / CustomerTemplate
-    for my $Key (qw( Subject Body PriorityID TypeID ServiceID SLAID Dest FromChatID StandardTemplateID)) {
+# Rother OSS / CustomerTemplate
+#    for my $Key (qw( Subject Body PriorityID TypeID ServiceID SLAID Dest FromChatID)) {
 
-        # EO CustomerTemplate
+    for my $Key (qw( Subject Body PriorityID TypeID ServiceID SLAID Dest FromChatID StandardTemplateID)) {
+# EO CustomerTemplate
+
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
     }
 
@@ -337,11 +335,9 @@ sub Run {
                     ServiceID  => 'ServiceID',
                     SLAID      => 'SLAID',
                     TypeID     => 'TypeID',
-
-                    # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
                     StandardTemplateID => 'StandardTemplateID',
-
-                    # EO CustomerTemplate
+# EO CustomerTemplate
                 );
                 if ( $ACLPreselection && !$InitialRun ) {
                     FIELD:
@@ -389,11 +385,9 @@ sub Run {
                         %GetParam,
                         CustomerUserID => $Self->{UserID},
                         QueueID        => $GetParam{QueueID},
-
-                        # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
                         ServiceID => $GetParam{ServiceID},
-
-                        # EO CustomerTemplate
+# EO CustomerTemplate
                         Services => $StdFieldValues{ServiceID} || undef,    # needed for SLAID
                     );
 
@@ -1135,7 +1129,7 @@ sub Run {
 
         my $Autoselect = $ConfigObject->Get('TicketACL::Autoselect') || undef;
 
-        # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
         # fetch template autoselection from a separate checkbox config option
         my $AutoselectStandardTemplates = $ConfigObject->Get('CustomerTemplate::Autoselect') || undef;
 
@@ -1143,8 +1137,7 @@ sub Run {
         if ($AutoselectStandardTemplates) {
             $Autoselect->{StandardTemplateID} = $AutoselectStandardTemplates * 2;
         }
-
-        # EO CustomerTemplate
+# EO CustomerTemplate
 
         # track changing standard fields
         my $ACLPreselection;
@@ -1557,15 +1550,13 @@ sub Run {
                 Translation  => 1,
                 Max          => 100,
             },
-
-            # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
             StandardTemplateID => {
                 PossibleNone => 1,
                 Translation  => 1,
                 Max          => 100,
             },
-
-            # EO CustomerTemplate
+# EO CustomerTemplate
         );
         delete $StdFieldValues{QueueID};
         for my $Field ( sort keys %StdFieldValues ) {
@@ -1577,7 +1568,7 @@ sub Run {
             };
         }
 
-        # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
         my @TemplateAJAX;
         my $UploadCacheObject = $Kernel::OM->Get('Kernel::System::Web::UploadCache');
 
@@ -1656,17 +1647,16 @@ sub Run {
                 },
             );
         }
+# EO CustomerTemplate
 
-        # EO CustomerTemplate
         my $JSON = $LayoutObject->BuildSelectionJSON(
             [
                 @StdFieldAJAX,
                 @DynamicFieldAJAX,
 
-                # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
                 @TemplateAJAX,
-
-                # EO CustomerTemplate
+# EO CustomerTemplate
             ],
         );
 
@@ -1884,7 +1874,6 @@ sub _GetStandardTemplates {
     # return just the templates for this screen
     return $StandardTemplates{CustomerCreate};
 }
-
 # EO CustomerTemplate
 
 sub _MaskNew {
@@ -2137,7 +2126,7 @@ sub _MaskNew {
         $Param{BodyValidate}    = 'Validate_Required_IfVisible';
     }
 
-    # Rother OSS / CustomerTemplate
+# Rother OSS / CustomerTemplate
     # check if exists customer create templates regardless the queue and the service
     my %StandardTemplates = $Kernel::OM->Get('Kernel::System::StandardTemplate')->StandardTemplateList(
         Valid => 1,
@@ -2166,8 +2155,7 @@ sub _MaskNew {
             Data => {%Param},
         );
     }
-
-    # EO CustomerTemplate
+# EO CustomerTemplate
 
     # show attachments
     ATTACHMENT:

@@ -18,9 +18,7 @@
         <h1>[% Translate("Issue a new Ticket") | html %]</h1>
     </div>
     <div id="oooMainBox" class="Content">
-# Rother OSS / CustomerTemplate   
-        <form action="[% Env("CGIHandle") %]" method="post" name="compose" id="CustomerTicket" enctype="multipart/form-data" class="Validate PreventMultipleSubmits">
-# EO CustomerTemplate        
+        <form action="[% Env("CGIHandle") %]" method="post" name="compose" id="NewCustomerTicket" enctype="multipart/form-data" class="Validate PreventMultipleSubmits">
             <input type="hidden" name="Action" value="[% Env("Action") %]" />
             <input type="hidden" name="Subaction" value="StoreNew" />
             <input type="hidden" name="Expand" id="Expand" value="" />
@@ -167,9 +165,7 @@
 # EO CustomerTemplate
                 <div class="RichTextHolder RichTextField [% Data.BodyHiddenClass | html %]">
                     <textarea id="RichText" class="RichText [% Data.BodyValidate | html %] [% Data.BodyInvalid | html %]" name="Body" rows="15" cols="[% Config("Ticket::Frontend::TextAreaNote") %]">[% Data.Body | html %]</textarea>
-                    <label for="RichText" class="Mandatory">
-                        [% Translate("Text") | html %] <span class="Marker">*</span>
-                    </label>
+                    <label for="RichText" class="Mandatory">[% Translate("Text") | html %] <span class="Marker">*</span></label>
                     <div id="RichTextError" class="TooltipErrorMessage" ><p>[% Translate("This field is required.") | html %]</p></div>
                     <div id="RichTextServerError" class="TooltipErrorMessage NoJavaScriptMessage[% Data.BodyInvalid | html %]" ><p>[% Translate("This field is required.") | html %]</p></div>
                     <div class="Clear"></div>
