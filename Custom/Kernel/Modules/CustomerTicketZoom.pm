@@ -2,7 +2,7 @@
 # OTOBO is a web-based ticketing system for service organisations.
 # --
 # Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
-# Copyright (C) 2019-2024 Rother OSS GmbH, https://otobo.de/
+# Copyright (C) 2019-2024 Rother OSS GmbH, https://otobo.io/
 # --
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -22,12 +22,12 @@ use warnings;
 
 # core modules
 use Digest::MD5 qw(md5_hex);
-use List::Util qw(any);
+use List::Util  qw(any);
 
 # CPAN modules
 
 # OTOBO modules
-use Kernel::Language qw(Translatable);
+use Kernel::Language              qw(Translatable);
 use Kernel::System::VariableCheck qw(:all);
 
 our $ObjectManagerDisabled = 1;
@@ -1423,7 +1423,7 @@ sub Run {
     }
 
     my $FieldRestrictionsObject = $Kernel::OM->Get('Kernel::System::Ticket::FieldRestrictions');
-    my $Autoselect = $ConfigObject->Get('TicketACL::Autoselect') || undef;
+    my $Autoselect              = $ConfigObject->Get('TicketACL::Autoselect') || undef;
 
 # Rother OSS / CustomerTemplate
     # fetch template autoselection from a separate checkbox config option
@@ -2138,7 +2138,7 @@ sub _Mask {
 
     # standard ticket categories
     CAT:
-    for my $CatName (qw/Type Queue Service State Owner/) {
+    for my $CatName (qw/Priority Type Queue Service State Owner/) {
         next CAT if !$Param{$CatName};
         if ( $CategoryConfig->{$CatName} ) {
             my $Conf = $CategoryConfig->{$CatName};

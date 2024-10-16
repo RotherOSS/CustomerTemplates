@@ -2,7 +2,7 @@
 # OTOBO is a web-based ticketing system for service organisations.
 # --
 # Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
-# Copyright (C) 2019-2024 Rother OSS GmbH, https://otobo.de/
+# Copyright (C) 2019-2024 Rother OSS GmbH, https://otobo.io/
 # --
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -22,7 +22,7 @@ use warnings;
 our $ObjectManagerDisabled = 1;
 
 use Kernel::System::VariableCheck qw(:all);
-use Kernel::Language qw(Translatable);
+use Kernel::Language              qw(Translatable);
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -385,10 +385,10 @@ sub Run {
                         %GetParam,
                         CustomerUserID => $Self->{UserID},
                         QueueID        => $GetParam{QueueID},
+                        Services       => $StdFieldValues{ServiceID} || undef,    # needed for SLAID
 # Rother OSS / CustomerTemplate
-                        ServiceID => $GetParam{ServiceID},
+                        ServiceID      => $GetParam{ServiceID},
 # EO CustomerTemplate
-                        Services => $StdFieldValues{ServiceID} || undef,    # needed for SLAID
                     );
 
                     # special stuff for QueueID/Dest: Dest is "QueueID||QueueName" => "QueueName";
