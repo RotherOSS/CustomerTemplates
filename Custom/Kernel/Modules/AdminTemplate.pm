@@ -482,15 +482,12 @@ sub _Edit {
     my $TemplateTypeList = $Kernel::OM->Get('Kernel::Config')->Get('StandardTemplate::Types');
 
 # Rother OSS / CustomerTemplate
-    # the customer types are defined in an additional config file and are retrieved as a sub-hash
-    for my $TemplateTypeElement ( keys %{$TemplateTypeList} ) {
-        if ( ref $TemplateTypeList->{$TemplateTypeElement} eq 'HASH' ) {
-            for my $TemplateTypeHashKey ( keys %{ $TemplateTypeList->{$TemplateTypeElement} } ) {
-                $TemplateTypeList->{$TemplateTypeHashKey} = $TemplateTypeList->{$TemplateTypeElement}->{$TemplateTypeHashKey};
-            }
-            delete $TemplateTypeList->{$TemplateTypeElement};
-        }
-    }
+    # retrieve and add customer specific types
+    my $TemplateCustomerTypeList = $Kernel::OM->Get('Kernel::Config')->Get('StandardTemplate::CustomerTypes');
+    $TemplateTypeList = {
+        %{$TemplateTypeList},
+        %{$TemplateCustomerTypeList},
+    };
 # EO CustomerTemplate
 
     $Param{TemplateTypeString} = $LayoutObject->BuildSelection(

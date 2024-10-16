@@ -132,18 +132,15 @@
                     <p class="FieldExplanation">[% Translate("Setting a template will overwrite any text or attachment.") | html %]</p>
                     <div class="Clear"></div>
                 </div>
-# EO CustomerTemplate
-
 [% RenderBlockEnd("StandardTemplate") %]
+# EO CustomerTemplate
 
                 <div class="RichTextHolder">
                     <textarea title="[% Translate("Reply") | html %]" id="RichText" class="RichText DontPrint Validate_RequiredRichText [% Data.RichTextInvalid | html %]" name="Body" rows="15" cols="[% Config("Ticket::Frontend::TextAreaNote") | html %]">[% Data.Body | html %]</textarea>
                     <div id="RichTextError" class="TooltipErrorMessage">
                         <p>[% Translate("This field is required.") | html %]</p>
                     </div>
-                    <label for="RichText" class="Mandatory">
-                        [% Translate("Text") | html %] <span class="Marker">*</span>
-                    </label>
+                    <label for="RichText" class="Mandatory">[% Translate("Text") | html %] <span class="Marker">*</span></label>
                     <div id="RichTextServerError" class="TooltipErrorMessage NoJavaScriptMessage[% Data.RichTextInvalid | html %]">
                         <p>[% Translate("This field is required.") | html %]</p>
                     </div>
