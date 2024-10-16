@@ -386,11 +386,7 @@ sub Run {
                         CustomerUserID => $Self->{UserID},
                         QueueID        => $GetParam{QueueID},
                         Services       => $StdFieldValues{ServiceID} || undef,    # needed for SLAID
-# Rother OSS / CustomerTemplate
-                        ServiceID      => $GetParam{ServiceID},
-# EO CustomerTemplate
                     );
-
                     # special stuff for QueueID/Dest: Dest is "QueueID||QueueName" => "QueueName";
                     if ( $Field->{FieldID} eq 'Dest' ) {
                         TOs:
@@ -1811,23 +1807,10 @@ sub _GetStandardTemplates {
     my $ServiceObject = $Kernel::OM->Get('Kernel::System::Service');
 
     my %StandardTemplates;
-    my $ReferenceAttribute = $ConfigObject->Get('CustomerTemplate::ReferenceAttribute') || 'queue';
-    if ( $ReferenceAttribute eq 'queue' ) {
+    my $ReferenceAttribute = $ConfigObject->Get('CustomerTemplate::ReferenceAttribute') || 'Queue';
+    if ( $ReferenceAttribute eq 'Queue' ) {
 
         # check needed
-        return {} if !$QueueID && !$Param{TicketID};
-
-        if ( !$QueueID && $Param{TicketID} ) {
-
-            # get QueueID from the ticket
-            my %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
-                TicketID      => $Param{TicketID},
-                DynamicFields => 0,
-                UserID        => $Self->{UserID},
-            );
-            $QueueID = $Ticket{QueueID} || '';
-        }
-
         return {} if !$QueueID;
 
         # fetch all std. templates
@@ -1836,22 +1819,9 @@ sub _GetStandardTemplates {
             TemplateTypes => 1,
         );
     }
-    elsif ( $ReferenceAttribute eq 'service' ) {
+    elsif ( $ReferenceAttribute eq 'Service' ) {
 
         # check needed
-        return {} if !$ServiceID && !$Param{TicketID};
-
-        if ( !$ServiceID && $Param{TicketID} ) {
-
-            # get ServiceID from the ticket
-            my %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
-                TicketID      => $Param{TicketID},
-                DynamicFields => 0,
-                UserID        => $Self->{UserID},
-            );
-            $ServiceID = $Ticket{ServiceID} || '';
-        }
-
         return {} if !$ServiceID;
 
         # fetch all std. templates

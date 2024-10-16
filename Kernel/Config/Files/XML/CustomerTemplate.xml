@@ -122,9 +122,9 @@
         <Description Translatable="1">Defines if the list of available standard templates depends on the queue or on the service</Description>
         <Navigation>Core::Ticket</Navigation>
         <Value>
-            <Item ValueType="Select" SelectedID="queue">
-                <Item ValueType="Option" Value="queue" Translatable="1">Queue</Item>
-                <Item ValueType="Option" Value="service" Translatable="1">Service</Item>
+            <Item ValueType="Select" SelectedID="Queue">
+                <Item ValueType="Option" Value="Queue" Translatable="1">Queue</Item>
+                <Item ValueType="Option" Value="Service" Translatable="1">Service</Item>
             </Item>
         </Value>
     </Setting>

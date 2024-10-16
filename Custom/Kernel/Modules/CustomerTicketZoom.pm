@@ -2738,8 +2738,8 @@ sub _GetStandardTemplates {
     my $ServiceObject = $Kernel::OM->Get('Kernel::System::Service');
 
     my %AvailableStandardTemplates;
-    my $ReferenceAttribute = $ConfigObject->Get('CustomerTemplate::ReferenceAttribute') || 'queue';
-    if ( $ReferenceAttribute eq 'queue' ) {
+    my $ReferenceAttribute = $ConfigObject->Get('CustomerTemplate::ReferenceAttribute') || 'Queue';
+    if ( $ReferenceAttribute eq 'Queue' ) {
 
         # check needed
         return {} if !$QueueID && !$Param{TicketID};
@@ -2763,7 +2763,7 @@ sub _GetStandardTemplates {
             TemplateTypes => 1,
         );
     }
-    elsif ( $ReferenceAttribute eq 'service' ) {
+    elsif ( $ReferenceAttribute eq 'Service' ) {
 
         # check needed
         return {} if !$ServiceID && !$Param{TicketID};
