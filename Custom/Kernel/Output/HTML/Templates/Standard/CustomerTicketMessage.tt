@@ -153,16 +153,13 @@
                     [% Data.StandardTemplateStrg %]
                     <label for="StandardTemplateID" title="[% Translate("New ticket template") | html %]">[% Translate("Text Template") | html %]:</label>
                     <div class="Clear"></div>
-                </div>
-
-                <div class="Row FieldExplanationRow">
                     <div class="InputField_Container" tabindex="-1">
                         <p class="FieldExplanation">[% Translate("Setting a template will overwrite any text or attachment.") | html %]</p>
                     </div>
                 </div>
-
 [% RenderBlockEnd("StandardTemplate") %]
 # EO CustomerTemplate
+
                 <div class="RichTextHolder RichTextField [% Data.BodyHiddenClass | html %]">
                     <textarea id="RichText" class="RichText [% Data.BodyValidate | html %] [% Data.BodyInvalid | html %]" name="Body" rows="15" cols="[% Config("Ticket::Frontend::TextAreaNote") %]">[% Data.Body | html %]</textarea>
                     <label for="RichText" class="Mandatory">[% Translate("Text") | html %] <span class="Marker">*</span></label>

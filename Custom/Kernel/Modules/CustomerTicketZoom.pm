@@ -330,7 +330,7 @@ sub Run {
 # Rother OSS / CustomerTemplate
 #    for my $Key (qw(Subject Body StateID PriorityID FromChatID FromChat)) {
 
-    for my $Key (qw(Subject Body StateID PriorityID FromChatID FromChat ServiceID StandardTemplateID)) {
+    for my $Key (qw(Subject Body StateID PriorityID FromChatID FromChat StandardTemplateID)) {
 # EO CustomerTemplate
 
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
