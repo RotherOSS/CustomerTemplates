@@ -1345,37 +1345,36 @@ sub GetAllCustomServices {
 
 =head2 ServiceStandardTemplateMemberList()
 
-get standard responses of a service
+get standard templates associated to a service
 
-    my %Templates = $ServiceObject->ServiceStandardTemplateMemberList( ServiceID => 123 );
-
-Returns:
-    %Templates = (
-        1 => 'Some Name',
-        2 => 'Some Name',
+    my %Templates = $ServiceObject->ServiceStandardTemplateMemberList(
+        ServiceID => 123
     );
 
-    my %Responses = $ServiceObject->ServiceStandardTemplateMemberList(
-        ServiceID       => 123,
+    Returns:
+        %Templates = (
+            1 => 'Some Name',
+            2 => 'Some Name',
+        );
+
+
+    my %Templates = $ServiceObject->ServiceStandardTemplateMemberList(
+        ServiceID     => 123,
         TemplateTypes => 1,
     );
 
-Returns:
-    %Responses = (
-        Answer => {
-            1 => 'Some Name',
-            2 => 'Some Name',
-        },
-        # ...
-    );
-
-    my %Services = $ServiceObject->ServiceStandardTemplateMemberList( StandardTemplateID => 123 );
-
-Returns:
-    %Services = (
-        1 => 'Some Name',
-        2 => 'Some Name',
-    );
+    Returns:
+        %Responses = (
+            Create => {
+                1 => 'Some Name',
+                2 => 'Some Name',
+            },
+            Answer => {
+                3 => 'Some Name',
+                4 => 'Some Name',
+            },
+            # ...
+        );
 
 =cut
 
@@ -1486,10 +1485,10 @@ sub ServiceStandardTemplateMemberList {
 
 =head2 ServiceStandardTemplateMemberAdd()
 
-to add a template to a service
+to associate a new template to a service
 
     my $Success = $ServiceObject->ServiceStandardTemplateMemberAdd(
-        ServiceID            => 123,
+        ServiceID          => 123,
         StandardTemplateID => 123,
         Active             => 1,        # to set/confirm (1) or remove (0) the relation
         UserID             => 123,
