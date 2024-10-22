@@ -37,7 +37,7 @@ The association of a customer template to a given queue is done the same way as 
 
 **Associaton with services**
 
-The process is analogous to the association with queues, as mentioned above, but using instead the Templates ↔ Queues module of the Ticket Settings group.
+The process is analogous to the association with queues, as mentioned above, but using instead the Templates-Services module of the Ticket Settings group.
 
 **Using Customer Templates to create tickets on the Customer interface**
 
