@@ -485,8 +485,8 @@ sub _Edit {
     # retrieve and add customer specific types
     my $TemplateCustomerTypeList = $Kernel::OM->Get('Kernel::Config')->Get('StandardTemplate::CustomerTypes');
     $TemplateTypeList = {
-        %{$TemplateTypeList},
-        %{$TemplateCustomerTypeList},
+        %{ $TemplateTypeList // {} },
+        %{ $TemplateCustomerTypeList // {} },
     };
 # EO CustomerTemplate
 
