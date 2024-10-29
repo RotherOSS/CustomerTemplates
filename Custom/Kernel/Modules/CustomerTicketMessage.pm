@@ -1126,12 +1126,9 @@ sub Run {
         my $Autoselect = $ConfigObject->Get('TicketACL::Autoselect') || undef;
 
 # Rother OSS / CustomerTemplate
-        # fetch template autoselection from a separate checkbox config option
-        my $AutoselectStandardTemplates = $ConfigObject->Get('CustomerTemplate::Autoselect') || undef;
-
-        # if checked, assume mode 2 (autoselect and hide) and add to the autoselection list
-        if ($AutoselectStandardTemplates) {
-            $Autoselect->{StandardTemplateID} = $AutoselectStandardTemplates * 2;
+        # if templates should be autoselected, automatically hide them
+        if ( $ConfigObject->Get('CustomerTemplate::Autoselect') ) {
+            $Autoselect->{StandardTemplateID} = 2;
         }
 # EO CustomerTemplate
 
