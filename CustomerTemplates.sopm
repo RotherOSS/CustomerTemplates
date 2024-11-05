@@ -19,7 +19,6 @@
         <File Permission="644" Location="Custom/Kernel/System/Service.pm" />
         <File Permission="644" Location="var/httpd/htdocs/js/Core.Agent.Admin.ServiceTemplates.js" />
         <File Permission="644" Location="var/httpd/htdocs/js/Core.Customer.TicketAction.js" />
-        <File Permission="644" Location="var/httpd/htdocs/skins/Customer/default/css/Core.FieldExplanationRow.css" />
     </Filelist>
     <DatabaseInstall Type="post">
         <TableCreate Name="service_standard_template">

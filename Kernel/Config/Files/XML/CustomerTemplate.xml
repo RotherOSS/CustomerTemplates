@@ -20,7 +20,6 @@
                 <Item Key="CSS">
                     <Array>
                         <Item>Core.Process.css</Item>
-                        <Item>Core.FieldExplanationRow.css</Item>
                     </Array>
                 </Item>
                 <Item Key="JavaScript">
