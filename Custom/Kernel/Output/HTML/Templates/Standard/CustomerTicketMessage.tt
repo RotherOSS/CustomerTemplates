@@ -152,10 +152,8 @@
                 <div class="Row">
                     [% Data.StandardTemplateStrg %]
                     <label for="StandardTemplateID" title="[% Translate("New ticket template") | html %]">[% Translate("Text Template") | html %]:</label>
+                    <p class="FieldExplanation">[% Translate("Setting a template will overwrite any text or attachment.") | html %]</p>
                     <div class="Clear"></div>
-                    <div class="InputField_Container" tabindex="-1">
-                        <p class="FieldExplanation">[% Translate("Setting a template will overwrite any text or attachment.") | html %]</p>
-                    </div>
                 </div>
 [% RenderBlockEnd("StandardTemplate") %]
 # EO CustomerTemplate
