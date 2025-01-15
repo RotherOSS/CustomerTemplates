@@ -30,7 +30,7 @@
             </Hash>
         </Value>
     </Setting>
-    
+
     <Setting Name="Loader::Module::CustomerTicketZoom###003-StandardTemplates" Required="0" Valid="1">
         <Description Translatable="1">Loader module registration for the customer interface.</Description>
         <Navigation>Frontend::Customer::ModuleRegistration::Loader</Navigation>
@@ -46,7 +46,7 @@
             </Hash>
         </Value>
     </Setting>
-    
+
     <Setting Name="Frontend::Module###AdminServiceTemplates" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration</Navigation>

@@ -30,8 +30,8 @@
             <Column Name="change_time" Required="true" Type="DATE" />
             <Column Name="change_by" Required="true" Type="INTEGER" />
             <Unique>
-		<UniqueColumn Name="service_id" />
-		<UniqueColumn Name="standard_template_id" />
+                <UniqueColumn Name="service_id" />
+                <UniqueColumn Name="standard_template_id" />
             </Unique>
             <Index Name="service_standard_template_service_id">
                 <IndexColumn Name="service_id" />
@@ -55,4 +55,3 @@
         <TableDrop Name="service_standard_template" />
     </DatabaseUninstall>
 </otobo_package>
-

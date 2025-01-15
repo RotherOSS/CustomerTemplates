@@ -2,7 +2,7 @@
 # OTOBO is a web-based ticketing system for service organisations.
 # --
 # Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
-# Copyright (C) 2019-2024 Rother OSS GmbH, https://otobo.de/
+# Copyright (C) 2019-2025 Rother OSS GmbH, https://otobo.io/
 # --
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -122,7 +122,7 @@ sub Run {
         # get templates
         my %StandardTemplateData = $Self->_CustomerStandardTemplateList(
             Valid => 1,
-            Type  => ["CustomerCreate", "CustomerAnswer"],
+            Type  => [ "CustomerCreate", "CustomerAnswer" ],
         );
 
         if (%StandardTemplateData) {
@@ -446,7 +446,7 @@ sub _Overview {
     # get std template list
     my %StandardTemplateData = $Self->_CustomerStandardTemplateList(
         Valid => 1,
-        Type  => ["CustomerCreate", "CustomerAnswer"],
+        Type  => [ "CustomerCreate", "CustomerAnswer" ],
 
     );
 
@@ -551,7 +551,7 @@ sub _Overview {
 sub _CustomerStandardTemplateList {
     my ( $Self, %Param ) = @_;
 
-    my $TemplateTypes = "'" . (join ',', @{$Param{Type}}) . "'";
+    my $TemplateTypes = "'" . ( join ',', @{ $Param{Type} } ) . "'";
     $TemplateTypes =~ s/,/','/g;
 
     my $Valid = 1;
