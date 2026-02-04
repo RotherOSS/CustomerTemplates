@@ -118,7 +118,7 @@
         </Value>
     </Setting>
     <Setting Name="CustomerTemplate::ReferenceAttribute" Required="0" Valid="1">
-        <Description Translatable="1">Defines if the list of available standard templates depends on the queue or on the service</Description>
+        <Description Translatable="1">Defines if the list of available standard templates depends on the queue or on the service.</Description>
         <Navigation>Core::Ticket</Navigation>
         <Value>
             <Item ValueType="Select" SelectedID="Queue">

@@ -2,9 +2,9 @@
 # OTOBO is a web-based ticketing system for service organisations.
 # --
 # Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
-# Copyright (C) 2019-2025 Rother OSS GmbH, https://otobo.io/
+# Copyright (C) 2019-2026 Rother OSS GmbH, https://otobo.io/
 # --
-# $origin: otobo - e44c18aea9abc125fddf9ceeed204db4fab290e0 - Kernel/Modules/CustomerTicketZoom.pm
+# $origin: otobo - 9d5fa9f4cc09acd628a61c9f2d7243341b65fb6a - Kernel/Modules/CustomerTicketZoom.pm
 # --
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -133,7 +133,7 @@ sub new {
 # EO CustomerTemplate
     ];
 
-    # dependancies of standard fields which are not defined via ACLs - here for consistency
+    # dependencies of standard fields which are not defined via ACLs - here for consistency
     $Self->{InternalDependancy} = {};
 
     return $Self;
@@ -469,7 +469,7 @@ sub Run {
 
                 my %NewChangedElements;
 
-                # which standard fields to check - FieldID => GetParamValue (neccessary for Dest)
+                # which standard fields to check - FieldID => GetParamValue (necessary for Dest)
                 my %Check = (
                     NextStateID => 'NextStateID',
                     PriorityID  => 'PriorityID',
@@ -541,7 +541,7 @@ sub Run {
                         }
 
                         # autoselect
-                        elsif ( !$GetParam{QueueID} && $Autoselect && $Autoselect->{Dest} ) {
+                        if ( !$GetParam{QueueID} && $Autoselect && $Autoselect->{Dest} ) {
                             $GetParam{QueueID} = $FieldRestrictionsObject->Autoselect(
                                 PossibleValues => $StdFieldValues{QueueID},
                             ) || '';
@@ -561,7 +561,7 @@ sub Run {
                     }
 
                     # autoselect
-                    elsif ( !$GetParam{ $Field->{FieldID} } && $Autoselect && $Autoselect->{ $Field->{FieldID} } ) {
+                    if ( !$GetParam{ $Field->{FieldID} } && $Autoselect && $Autoselect->{ $Field->{FieldID} } ) {
                         $GetParam{ $Field->{FieldID} } = $FieldRestrictionsObject->Autoselect(
                             PossibleValues => $StdFieldValues{ $Field->{FieldID} },
                         ) || '';
@@ -661,7 +661,7 @@ sub Run {
             if ( $DynamicFieldConfig->{Config}{MultiValue} && ref $GetParam{DynamicField}{"DynamicField_$DynamicFieldConfig->{Name}"} eq 'ARRAY' ) {
                 for my $i ( 0 .. $#{ $GetParam{DynamicField}{"DynamicField_$DynamicFieldConfig->{Name}"} } ) {
                     my $DataValues = $DynFieldStates{Fields}{$Name}{NotACLReducible}
-                        ? $GetParam{DynamicField}{"DynamicField_$DynamicFieldConfig->{Name}"}[$i]
+                        ? ( $GetParam{DynamicField}{"DynamicField_$DynamicFieldConfig->{Name}"}[$i] // '' )
                         :
                         (
                             $BackendObject->BuildSelectionDataGet(
@@ -677,7 +677,28 @@ sub Run {
                         Name        => "DynamicField_$DynamicFieldConfig->{Name}_$i",
                         Data        => $DataValues,
                         SelectedID  => $GetParam{DynamicField}{"DynamicField_$DynamicFieldConfig->{Name}"}[$i],
-                        Translation => $DynamicFieldConfig->{Config}->{TranslatableValues} || 0,
+                        Translation => $DynamicFieldConfig->{Config}{TranslatableValues} || 0,
+                        Max         => 100,
+                    };
+                }
+
+                # add template value for keeping templates in line with ACLs
+                if ( !$DynFieldStates{Fields}{$Name}{NotACLReducible} ) {
+                    my $DataValues = (
+                        $BackendObject->BuildSelectionDataGet(
+                            DynamicFieldConfig => $DynamicFieldConfig,
+                            PossibleValues     => $DynFieldStates{Fields}{$Name}{PossibleValues},
+                            Value              => [ $DynamicFieldConfig->{Config}{DefaultValue} // '' ],
+                            )
+                            || $DynFieldStates{Fields}{$Name}{PossibleValues}
+                    );
+
+                    # add dynamic field to the list of fields to update
+                    push @DynamicFieldAJAX, {
+                        Name        => "DynamicField_$DynamicFieldConfig->{Name}_Template",
+                        Data        => $DataValues,
+                        SelectedID  => $DynamicFieldConfig->{Config}{DefaultValue} // '',
+                        Translation => $DynamicFieldConfig->{Config}{TranslatableValues} || 0,
                         Max         => 100,
                     };
                 }
@@ -686,7 +707,7 @@ sub Run {
             }
 
             my $DataValues = $DynFieldStates{Fields}{$Name}{NotACLReducible}
-                ? $GetParam{DynamicField}{"DynamicField_$DynamicFieldConfig->{Name}"}
+                ? ( $GetParam{DynamicField}{"DynamicField_$DynamicFieldConfig->{Name}"} // '' )
                 :
                 (
                     $BackendObject->BuildSelectionDataGet(
@@ -702,7 +723,7 @@ sub Run {
                 Name        => 'DynamicField_' . $DynamicFieldConfig->{Name},
                 Data        => $DataValues,
                 SelectedID  => $GetParam{DynamicField}{"DynamicField_$DynamicFieldConfig->{Name}"},
-                Translation => $DynamicFieldConfig->{Config}->{TranslatableValues} || 0,
+                Translation => $DynamicFieldConfig->{Config}{TranslatableValues} || 0,
                 Max         => 100,
             };
         }
@@ -717,7 +738,7 @@ sub Run {
                 if ( $DynamicFieldConfig->{Config}{MultiValue} && ref $SetField->{Values}{$FrontendName} eq 'ARRAY' ) {
                     for my $i ( 0 .. $#{ $SetField->{Values}{$FrontendName} } ) {
                         my $DataValues = $SetField->{FieldStates}{$FrontendName}{NotACLReducible}
-                            ? $SetField->{Values}{$FrontendName}[$i]
+                            ? ( $SetField->{Values}{$FrontendName}[$i] // '' )
                             :
                             (
                                 $BackendObject->BuildSelectionDataGet(
@@ -733,7 +754,28 @@ sub Run {
                             Name        => 'DynamicField_' . $FrontendName . "_$i",
                             Data        => $DataValues,
                             SelectedID  => $SetField->{Values}{$FrontendName}[$i],
-                            Translation => $DynamicFieldConfig->{Config}->{TranslatableValues} || 0,
+                            Translation => $DynamicFieldConfig->{Config}{TranslatableValues} || 0,
+                            Max         => 100,
+                        };
+                    }
+
+                    # add template value for keeping templates in line with ACLs
+                    if ( !$SetField->{FieldStates}{$FrontendName}{NotACLReducible} ) {
+                        my $DataValues = (
+                            $BackendObject->BuildSelectionDataGet(
+                                DynamicFieldConfig => $DynamicFieldConfig,
+                                PossibleValues     => $SetField->{FieldStates}{$FrontendName}{PossibleValues},
+                                Value              => [ $DynamicFieldConfig->{Config}{DefaultValue} // '' ],
+                                )
+                                || $SetField->{FieldStates}{$FrontendName}{PossibleValues}
+                        );
+
+                        # add dynamic field to the list of fields to update
+                        push @DynamicFieldAJAX, {
+                            Name        => 'DynamicField_' . $FrontendName . "_Template",
+                            Data        => $DataValues,
+                            SelectedID  => $DynamicFieldConfig->{Config}{DefaultValue} // '',
+                            Translation => $DynamicFieldConfig->{Config}{TranslatableValues} || 0,
                             Max         => 100,
                         };
                     }
@@ -742,7 +784,7 @@ sub Run {
                 }
 
                 my $DataValues = $SetField->{FieldStates}{$FrontendName}{NotACLReducible}
-                    ? $SetField->{Values}{$FrontendName}
+                    ? ( $SetField->{Values}{$FrontendName} // '' )
                     :
                     (
                         $BackendObject->BuildSelectionDataGet(
@@ -758,7 +800,7 @@ sub Run {
                     Name        => 'DynamicField_' . $FrontendName,
                     Data        => $DataValues,
                     SelectedID  => $SetField->{Values}{$FrontendName},
-                    Translation => $DynamicFieldConfig->{Config}->{TranslatableValues} || 0,
+                    Translation => $DynamicFieldConfig->{Config}{TranslatableValues} || 0,
                     Max         => 100,
                 };
             }
@@ -1328,10 +1370,7 @@ sub Run {
         # if user clicked submit on the main screen
         # store also chat protocol
         if ( !$GetParam{FromChat} && $GetParam{FromChatID} ) {
-            my $ChatObject = $Kernel::OM->Get('Kernel::System::Chat');
-            my %Chat       = $ChatObject->ChatGet(
-                ChatID => $GetParam{FromChatID},
-            );
+            my $ChatObject      = $Kernel::OM->Get('Kernel::System::Chat');
             my @ChatMessageList = $ChatObject->ChatMessageList(
                 ChatID => $GetParam{FromChatID},
             );
@@ -1488,7 +1527,7 @@ sub Run {
 
             my %NewChangedElements;
 
-            # which standard fields to check - FieldID => GetParamValue (neccessary for Dest)
+            # which standard fields to check - FieldID => GetParamValue (necessary for Dest)
             my %Check = (
                 NextStateID => 'NextStateID',
                 PriorityID  => 'PriorityID',
@@ -1559,7 +1598,7 @@ sub Run {
                     }
 
                     # autoselect
-                    elsif ( !$GetParam{QueueID} && $Autoselect && $Autoselect->{Dest} ) {
+                    if ( !$GetParam{QueueID} && $Autoselect && $Autoselect->{Dest} ) {
                         $GetParam{QueueID} = $FieldRestrictionsObject->Autoselect(
                             PossibleValues => $StdFieldValues{QueueID},
                         ) || '';
@@ -1579,7 +1618,7 @@ sub Run {
                 }
 
                 # autoselect
-                elsif ( !$GetParam{ $Field->{FieldID} } && $Autoselect && $Autoselect->{ $Field->{FieldID} } ) {
+                if ( !$GetParam{ $Field->{FieldID} } && $Autoselect && $Autoselect->{ $Field->{FieldID} } ) {
                     $GetParam{ $Field->{FieldID} } = $FieldRestrictionsObject->Autoselect(
                         PossibleValues => $StdFieldValues{ $Field->{FieldID} },
                     ) || '';
@@ -1752,7 +1791,6 @@ sub _Mask {
 
     # build article stuff
     my $SelectedArticleID = $ParamObject->GetParam( Param => 'ArticleID' ) || '';
-    my $BaseLink          = $LayoutObject->{Baselink} . "TicketID=$Self->{TicketID}&";
     my @ArticleBox        = @{ $Param{ArticleBox} };
 
     # prepare errors!
@@ -1964,7 +2002,7 @@ sub _Mask {
             },
         );
 
-        # output the process widget the the main screen
+        # output the process widget on the main screen
         $LayoutObject->Block(
             Name => 'ProcessWidget',
             Data => {
@@ -2311,9 +2349,6 @@ sub _Mask {
                         );
 
                         # Get all online users
-                        my @OnlineUsers = $Kernel::OM->Get('Kernel::System::Chat')->OnlineUserList(
-                            UserType => 'User',
-                        );
                         my $AvailabilityCheck = $Kernel::OM->Get('Kernel::Config')->Get("ChatEngine::CustomerFrontend::AvailabilityCheck")
                             || 0;
                         my %AvailableUsers;
@@ -2387,8 +2422,6 @@ sub _Mask {
         TicketID => $Self->{TicketID},
         UserID   => $Self->{UserID},
     );
-
-    my $CommunicationChannelObject = $Kernel::OM->Get('Kernel::System::CommunicationChannel');
 
     my $ShownArticles;
     my $LastSenderType = '';
@@ -2483,7 +2516,6 @@ sub _Mask {
             }
         }
 
-        my $ArticleArray = 0;
         for my $ArticleTmp (@ArticleBox) {
             my %ArticleTmp1 = %$ArticleTmp;
             if ( $ArticleID eq $ArticleTmp1{ArticleID} ) {
@@ -2634,9 +2666,9 @@ sub _Mask {
             }
             $Param{PriorityStrg} = $LayoutObject->BuildSelection(
                 Data => $Priorities,
-                Name => 'PriorityID FormUpdate',
+                Name => 'PriorityID',
                 %PrioritySelected,
-                Class => 'Modernize',
+                Class => 'Modernize FormUpdate',
             );
             $LayoutObject->Block(
                 Name => 'FollowUpPriority',
@@ -2706,6 +2738,13 @@ sub _Mask {
     }
     else {
         $UserInitials = substr( $CustomerUser{UserFirstName}, 0, 1 ) . substr( $CustomerUser{UserLastName}, 0, 1 );
+    }
+
+    # explanatory message about asterisk
+    if ( $ConfigObject->Get('Ticket::Frontend::AsteriskExplanation') ) {
+        $LayoutObject->Block(
+            Name => 'AsteriskExplanation',
+        );
     }
 
     # select the output template
