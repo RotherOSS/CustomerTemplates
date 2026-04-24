@@ -4,7 +4,7 @@
 # Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # Copyright (C) 2019-2026 Rother OSS GmbH, https://otobo.io/
 # --
-# $origin: otobo - 800091b06ec8f5a82ebe43f3c45644cf09dab47a - Kernel/Modules/CustomerTicketMessage.pm
+# $origin: otobo - e423ee3f4f0faf7995db27018567746054da97e5 - Kernel/Modules/CustomerTicketMessage.pm
 # --
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -168,9 +168,6 @@ sub Run {
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
     }
 
-    # probably not needed...
-    my %ACLCompatGetParam;
-
     # get Dynamic fields from ParamObject
     my %DynamicFieldValues;
 
@@ -232,7 +229,7 @@ sub Run {
 
     if ( !$Self->{Subaction} ) {
 
-        #Get default Queue ID if none is set
+        # Get default Queue ID if none is set
         my $QueueDefaultID;
         if ( !$GetParam{Dest} ) {
             my $QueueDefault = $Config->{'QueueDefault'} || '';
@@ -260,7 +257,7 @@ sub Run {
                 if ( %{ $CustomerPanelOwnSelection // {} } ) {
                     $GetParam{Dest} = $QueueIDParam . '||' . $CustomerPanelOwnSelection->{$QueueParam};
                 }
-                $ACLCompatGetParam{QueueID} = $QueueIDLookup;
+                $GetParam{QueueID} = $QueueIDLookup;
             }
         }
 
@@ -546,7 +543,6 @@ sub Run {
         my $Output = $LayoutObject->CustomerHeader();
         $Output .= $Self->_MaskNew(
             %GetParam,
-            %ACLCompatGetParam,
             ToSelected       => $GetParam{Dest},
             FromChatID       => $GetParam{FromChatID} || '',
             HideAutoselected => $HideAutoselectedJSON,
@@ -759,7 +755,6 @@ sub Run {
             # get the original list of queues to display
             my $Tos = $Self->_GetTos(
                 %GetParam,
-                %ACLCompatGetParam,
                 QueueID => $NewQueueID,
             );
 
@@ -858,7 +853,6 @@ sub Run {
                 );
             }
 
-            $Output .= $LayoutObject->CustomerNavigationBar();
             $Output .= $Self->_MaskNew(
                 Attachments => \@Attachments,
                 %GetParam,
@@ -1109,13 +1103,27 @@ sub Run {
 
     elsif ( $Self->{Subaction} eq 'AJAXUpdate' ) {
 
-        $GetParam{Dest} = $ParamObject->GetParam( Param => 'Dest' ) || '';
+        if ( $Config->{'Queue'} ) {
+            $GetParam{QueueID} = '';
+            if ( $GetParam{Dest} =~ /^(\d{1,100})\|\|.+?$/ ) {
+                $GetParam{QueueID} = $1;
+            }
+        }
+
+        # use QueueDefault as fallback if Queue selection is disabled
+        else {
+            my $QueueDefault = $Config->{'QueueDefault'} || '';
+            if ($QueueDefault) {
+                my $QueueDefaultID = $QueueObject->QueueLookup( Queue => $QueueDefault );
+                if ($QueueDefaultID) {
+                    $GetParam{Dest} = $QueueDefaultID . '||' . $QueueDefault;
+                }
+                $GetParam{QueueID} = $QueueDefaultID;
+            }
+        }
+
         my $CustomerUser   = $Self->{UserID};
         my $ElementChanged = $ParamObject->GetParam( Param => 'ElementChanged' ) || '';
-        $GetParam{QueueID} = '';
-        if ( $GetParam{Dest} =~ /^(\d{1,100})\|\|.+?$/ ) {
-            $GetParam{QueueID} = $1;
-        }
 
         # get list type
         my $TreeView = 0;

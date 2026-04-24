@@ -4,7 +4,7 @@
 # Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # Copyright (C) 2019-2026 Rother OSS GmbH, https://otobo.io/
 # --
-# $origin: otobo - 9d5fa9f4cc09acd628a61c9f2d7243341b65fb6a - Kernel/Modules/CustomerTicketZoom.pm
+# $origin: otobo - ba2b8d4c3d1d2c75ac3e475af1adb5fafd50f378 - Kernel/Modules/CustomerTicketZoom.pm
 # --
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -2366,7 +2366,7 @@ sub _Mask {
 
                             AVAILABLE_USER:
                             for my $AvailableUser ( sort keys %AvailableUsers ) {
-                                if ( grep {/^$ChatChannelData{Key}$/} @{ $AvailableUsers{$AvailableUser} } ) {
+                                if ( any {/^$ChatChannelData{Key}$/} @{ $AvailableUsers{$AvailableUser} } ) {
                                     $UserAvailable = 1;
                                     last AVAILABLE_USER;
                                 }
@@ -2428,7 +2428,7 @@ sub _Mask {
     my $ArticleHTML    = '';
 
     for my $ArticleTmp ( reverse @ArticleBox ) {
-        my %Article = %$ArticleTmp;
+        my %Article = $ArticleTmp->%*;
 
         # check if article should be expanded (visible)
         if ( $SelectedArticleID eq $Article{ArticleID} || $ZoomExpand ) {
@@ -2506,7 +2506,7 @@ sub _Mask {
             $ArticleOB = $ArticleBox[$LastCustomerArticle];
         }
 
-        %Article = %$ArticleOB;
+        %Article = $ArticleOB->%*;
 
         # if no customer articles found use ticket values
         if ( !IsHashRefWithData( \%Article ) ) {
@@ -2517,7 +2517,7 @@ sub _Mask {
         }
 
         for my $ArticleTmp (@ArticleBox) {
-            my %ArticleTmp1 = %$ArticleTmp;
+            my %ArticleTmp1 = $ArticleTmp->%*;
             if ( $ArticleID eq $ArticleTmp1{ArticleID} ) {
                 %Article = %ArticleTmp1;
             }
@@ -2698,7 +2698,7 @@ sub _Mask {
                 CustomerInterface     => 1,
                 Object                => {
                     CustomerID     => $Self->{CustomerID},
-                    CustomerUserID => $Self->{CustomerUserID},
+                    CustomerUserID => $Self->{UserID},
                     %DynamicFieldValues,
                 },
             );
