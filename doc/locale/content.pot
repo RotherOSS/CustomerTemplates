@@ -1,0 +1,353 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019–2026 Rother OSS GmbH, https://otobo.io
+# This file is distributed under the same license as the OTOBO Documentation package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OTOBO Documentation dev\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-24 11:09+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../content/index.rst:5
+msgid "Contents"
+msgstr ""
+
+#: ../content/index.rst:10
+msgid "Overview"
+msgstr ""
+
+#: ../content/index.rst:12
+msgid "Summary"
+msgstr ""
+
+#: ../content/index.rst:13
+msgid "Provides the Customer interface with the standard templates feature."
+msgstr ""
+
+#: ../content/index.rst:16
+msgid "Introduction"
+msgstr ""
+
+#: ../content/index.rst:17
+msgid "This package enhances the standard templates functionality present in the Agent interface for application on the Customer interface. The Customer user can create tickets and responses by choosing from a selection of typical pre-defined texts."
+msgstr ""
+
+#: ../content/index.rst:19
+msgid "The management interface for the new Customer templates is common to the one of the existing Agent templates, with the only difference being that the Customer templates must be assigned with either one of the *Customer Create* or *Customer Answer* types."
+msgstr ""
+
+#: ../content/index.rst:21
+msgid "A template may be assigned to one or more queues, so that the list of available templates will depend on the assigned templates for its queue. Alternatively, a template can also be assigned to one or more services, so that the list of available templates will depend on the service that the ticket is assigned to. However, on the ticket creation or ticket replying interface, the list of assigned templates depends permanently on only one of these criteria, which is set via configuration."
+msgstr ""
+
+#: ../content/index.rst:23
+msgid "In the circumstance of existing only one template available, a configuration option exists that allows the template to be selected automatically, avoiding the need for user interaction. In those cases in which no user interaction is needed the *Template* field is hidden and the *Body* field contains the template text."
+msgstr ""
+
+#: ../content/index.rst:26
+msgid "Common Usecases"
+msgstr ""
+
+#: ../content/index.rst:28
+msgid "**Template Definition**"
+msgstr ""
+
+#: ../content/index.rst:30
+msgid "Setting up and managing (editing, deleting, etc.) Customer Templates is the same as `setting up and managing templates for the Agent Interface <https://doc.otobo.de/manual/admin/10.1/en/content/ticket-settings/templates.html>`_, with the only difference being that upon template creation or edition, a customer template type must be assigned the *Customer Create* or *Customer Answer* type, depending on whether the customer user will use the template to create a new ticket or reply to an existing one, respectively."
+msgstr ""
+
+#: ../content/index.rst:32
+msgid "**Associaton with queues**"
+msgstr ""
+
+#: ../content/index.rst:34
+msgid "The association of a customer template to a given queue is done the same way as `in the Agent Interface <https://doc.otobo.de/manual/admin/10.1/en/content/ticket-settings/templates-queues.html>`_."
+msgstr ""
+
+#: ../content/index.rst:36
+msgid "**Associaton with services**"
+msgstr ""
+
+#: ../content/index.rst:38
+msgid "The process is analogous to the association with queues, as mentioned above, but using instead the Templates-Services module of the Ticket Settings group."
+msgstr ""
+
+#: ../content/index.rst:40
+msgid "**Using Customer Templates to create tickets on the Customer interface**"
+msgstr ""
+
+#: ../content/index.rst:42
+msgid "On the ticket creation dialog, as soon as you select a template from the templates selection list, the *Body* field is filled in with that template content."
+msgstr ""
+
+#: ../content/index.rst:44
+msgid "If the system configuration *Reference Attribute* is *Queue* (the default setting), the template list box contains only templates of the *Customer Create* type that are assigned to the selected queue for the ticket. The template selection list box is enabled only when a ticket queue is selected."
+msgstr ""
+
+#: ../content/index.rst:46
+msgid "If the system configuration *Reference Attribute* is *Service*, the template list box contains only templates of the *Customer Create* type that are assigned to the selected service for the ticket. The template selection list box is enabled only when a ticket service is selected."
+msgstr ""
+
+#: ../content/index.rst:48
+msgid "**Using Customer Templates to reply to tickets on the Customer interface**"
+msgstr ""
+
+#: ../content/index.rst:50
+msgid "If the system configuration *Reference Attribute* is *Queue* (the default setting), the template list box is provided only with templates of the *Customer Answer* type associated with the selected queue for the ticket."
+msgstr ""
+
+#: ../content/index.rst:52
+msgid "If the system configuration *Reference Attribute* is *Service*, the template list box is provided only with templates of the *Customer Answer* type associated with the selected service for the ticket."
+msgstr ""
+
+#: ../content/index.rst:55
+msgid "Further Reading"
+msgstr ""
+
+#: ../content/index.rst:56
+msgid "For those not yet familiar with the basics of the standard templates feature, a reference can be found `here <https://doc.otobo.de/manual/admin/10.1/en/content/ticket-settings/templates.html>`_."
+msgstr ""
+
+#: ../content/index.rst:59
+msgid "Configuration"
+msgstr ""
+
+#: ../content/index.rst:62
+msgid "System requirements"
+msgstr ""
+
+#: ../content/index.rst:65
+msgid "Framework"
+msgstr ""
+
+#: ../content/index.rst:66
+msgid "OTOBO 11.0.x"
+msgstr ""
+
+#: ../content/index.rst:69
+msgid "Packages"
+msgstr ""
+
+#: ../content/index.rst:70
+msgid "There are no package dependencies"
+msgstr ""
+
+#: ../content/index.rst:73
+msgid "Third-party software"
+msgstr ""
+
+#: ../content/index.rst:74
+msgid "Not applicable"
+msgstr ""
+
+#: ../content/index.rst:77
+msgid "Basic Configuration"
+msgstr ""
+
+#: ../content/index.rst:78
+msgid "Go to the Agent Interface Admin Overview"
+msgstr ""
+
+#: ../content/index.rst:79
+msgid "Select the Package Manager module from the Administration group"
+msgstr ""
+
+#: ../content/index.rst:80
+msgid "Select the package named CustomerTemplates from the Online Repository and click the associated  *Install* link on that line."
+msgstr ""
+
+#: ../content/index.rst:81
+msgid "Respond affirmatively to any confirmation questions that may follow."
+msgstr ""
+
+#: ../content/index.rst:84
+msgid "Custom Configuration and Advanced Features"
+msgstr ""
+
+#: ../content/index.rst:85
+msgid "**Setting the Reference Attribute**"
+msgstr ""
+
+#: ../content/index.rst:87
+msgid "By default, the Reference Attribute defaults to *Queue*. This means that on any of the Customer interface ticket dialogues, the template selection list box contains templates associated with the selected queue for the ticket. However, this configuration accepts *Queue* or *Service*. In the later case, on any of the Customer interface ticket dialogues, the template selection list box contains templates associated with the selected service for the ticket."
+msgstr ""
+
+#: ../content/index.rst:89
+msgid "To set the Reference Attribute to *Queue* or *Service*, do as follows:"
+msgstr ""
+
+#: ../content/index.rst:91
+#: ../content/index.rst:103
+msgid "Go to the administration in Agent interface"
+msgstr ""
+
+#: ../content/index.rst:92
+#: ../content/index.rst:104
+msgid "Open the System Config module in the Administration group"
+msgstr ""
+
+#: ../content/index.rst:93
+msgid "Search and select the *CustomerTemplate::ReferenceAttribute* config option"
+msgstr ""
+
+#: ../content/index.rst:94
+msgid "On the selection list box which is given, select the intended attribute from the options *Queue* or *Service*."
+msgstr ""
+
+#: ../content/index.rst:95
+#: ../content/index.rst:107
+msgid "Do not forget to deploy this change!"
+msgstr ""
+
+#: ../content/index.rst:97
+msgid "**Activating autoselection**"
+msgstr ""
+
+#: ../content/index.rst:99
+msgid "If autoselection is activated (it is deactivated by default), then when the template list box contains only one available item, that sole item is automatically selected and the template list box field is hidden."
+msgstr ""
+
+#: ../content/index.rst:101
+msgid "To activate , do as follows:"
+msgstr ""
+
+#: ../content/index.rst:105
+msgid "Search and select the *CustomerTemplate::Autoselect* config option"
+msgstr ""
+
+#: ../content/index.rst:106
+msgid "Enable and activate the checkbox that is given"
+msgstr ""
+
+#: ../content/index.rst:110
+msgid "Configuration Reference"
+msgstr ""
+
+#: ../content/index.rst:112
+msgid "Core::Ticket"
+msgstr ""
+
+#: ../content/index.rst:115
+msgid "StandardTemplate::CustomerTypes"
+msgstr ""
+
+#: ../content/index.rst:116
+msgid "Defines the list of customer types for templates."
+msgstr ""
+
+#: ../content/index.rst:119
+msgid "CustomerTemplate::ReferenceAttribute"
+msgstr ""
+
+#: ../content/index.rst:120
+msgid "Defines if the list of available standard templates depends on the queue or on the service"
+msgstr ""
+
+#: ../content/index.rst:123
+msgid "CustomerTemplate::Autoselect"
+msgstr ""
+
+#: ../content/index.rst:124
+msgid "Defines if a standard template should be automatically selected when it is the only one available."
+msgstr ""
+
+#: ../content/index.rst:127
+msgid "Frontend::Admin::ModuleRegistration"
+msgstr ""
+
+#: ../content/index.rst:130
+msgid "Frontend::Module###AdminServiceTemplates"
+msgstr ""
+
+#: ../content/index.rst:131
+msgid "Frontend module registration for the agent interface."
+msgstr ""
+
+#: ../content/index.rst:134
+msgid "Frontend::Admin::ModuleRegistration::AdminOverview"
+msgstr ""
+
+#: ../content/index.rst:137
+msgid "Frontend::NavigationModule###AdminServiceTemplates"
+msgstr ""
+
+#: ../content/index.rst:138
+msgid "Admin area navigation for the agent interface."
+msgstr ""
+
+#: ../content/index.rst:141
+msgid "Frontend::Admin::ModuleRegistration::Loader"
+msgstr ""
+
+#: ../content/index.rst:144
+msgid "Loader::Module::AdminServiceTemplates###002-Ticket"
+msgstr ""
+
+#: ../content/index.rst:145
+msgid "Loader module registration for the agent interface."
+msgstr ""
+
+#: ../content/index.rst:148
+msgid "Frontend::Admin::ModuleRegistration::MainMenu"
+msgstr ""
+
+#: ../content/index.rst:151
+msgid "Frontend::Navigation###AdminServiceTemplates###002-Ticket"
+msgstr ""
+
+#: ../content/index.rst:152
+msgid "Main menu item registration."
+msgstr ""
+
+#: ../content/index.rst:155
+msgid "Frontend::Customer::ModuleRegistration::Loader"
+msgstr ""
+
+#: ../content/index.rst:158
+msgid "Loader::Module::CustomerTicketMessage###003-StandardTemplates"
+msgstr ""
+
+#: ../content/index.rst:159
+#: ../content/index.rst:163
+msgid "Loader module registration for the customer interface."
+msgstr ""
+
+#: ../content/index.rst:162
+msgid "Loader::Module::CustomerTicketZoom###003-StandardTemplates"
+msgstr ""
+
+#: ../content/index.rst:166
+msgid "About"
+msgstr ""
+
+#: ../content/index.rst:169
+msgid "Contact"
+msgstr ""
+
+#: ../content/index.rst:170
+msgid "Rother OSS GmbH"
+msgstr ""
+
+#: ../content/index.rst:171
+msgid "Email: hello@otobo.io"
+msgstr ""
+
+#: ../content/index.rst:172
+msgid "Web: https://otobo.io"
+msgstr ""
+
+#: ../content/index.rst:175
+msgid "Version"
+msgstr ""
+
+#: ../content/index.rst:176
+msgid "Author: |doc-vendor| / Version: |doc-version| / Date of release: |doc-datestamp|"
+msgstr ""
