@@ -110,20 +110,21 @@ To activate , do as follows:
 
 Configuration Reference
 -----------------------
+
 Core::Ticket
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-StandardTemplate::CustomerTypes
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-Defines the list of customer types for templates.
-
-CustomerTemplate::ReferenceAttribute
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-Defines if the list of available standard templates depends on the queue or on the service
 
 CustomerTemplate::Autoselect
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 Defines if a standard template should be automatically selected when it is the only one available.
+
+CustomerTemplate::ReferenceAttribute
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Defines if the list of available standard templates depends on the queue or on the service.
+
+StandardTemplate::CustomerTypes
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Defines the list of customer types for templates.
 
 Frontend::Admin::ModuleRegistration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -163,7 +164,6 @@ Loader module registration for the customer interface.
 Loader::Module::CustomerTicketZoom###003-StandardTemplates
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 Loader module registration for the customer interface.
-
 
 About
 =======
