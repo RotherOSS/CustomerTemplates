@@ -4,7 +4,7 @@
 # Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # Copyright (C) 2019-2026 Rother OSS GmbH, https://otobo.io/
 # --
-# $origin: otobo - ba2b8d4c3d1d2c75ac3e475af1adb5fafd50f378 - Kernel/Modules/CustomerTicketZoom.pm
+# $origin: otobo - 581e36fb3affc2a387dd70824e309f45163545fe - Kernel/Modules/CustomerTicketZoom.pm
 # --
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -651,167 +651,11 @@ sub Run {
         }
 
         # update Dynamic Fields Possible Values via AJAX
-        my @DynamicFieldAJAX;
-
-        # cycle trough the activated Dynamic Fields for this screen
-        DYNAMICFIELD:
-        for my $Name ( sort keys %{ $DynFieldStates{Fields} } ) {
-            my $DynamicFieldConfig = $Self->{FollowUpDynamicField}{$Name};
-
-            if ( $DynamicFieldConfig->{Config}{MultiValue} && ref $GetParam{DynamicField}{"DynamicField_$DynamicFieldConfig->{Name}"} eq 'ARRAY' ) {
-                for my $i ( 0 .. $#{ $GetParam{DynamicField}{"DynamicField_$DynamicFieldConfig->{Name}"} } ) {
-                    my $DataValues = $DynFieldStates{Fields}{$Name}{NotACLReducible}
-                        ? ( $GetParam{DynamicField}{"DynamicField_$DynamicFieldConfig->{Name}"}[$i] // '' )
-                        :
-                        (
-                            $BackendObject->BuildSelectionDataGet(
-                                DynamicFieldConfig => $DynamicFieldConfig,
-                                PossibleValues     => $DynFieldStates{Fields}{$Name}{PossibleValues},
-                                Value              => [ $GetParam{DynamicField}{"DynamicField_$DynamicFieldConfig->{Name}"}[$i] ],
-                            )
-                            || $DynFieldStates{Fields}{$Name}{PossibleValues}
-                        );
-
-                    # add dynamic field to the list of fields to update
-                    push @DynamicFieldAJAX, {
-                        Name        => "DynamicField_$DynamicFieldConfig->{Name}_$i",
-                        Data        => $DataValues,
-                        SelectedID  => $GetParam{DynamicField}{"DynamicField_$DynamicFieldConfig->{Name}"}[$i],
-                        Translation => $DynamicFieldConfig->{Config}{TranslatableValues} || 0,
-                        Max         => 100,
-                    };
-                }
-
-                # add template value for keeping templates in line with ACLs
-                if ( !$DynFieldStates{Fields}{$Name}{NotACLReducible} ) {
-                    my $DataValues = (
-                        $BackendObject->BuildSelectionDataGet(
-                            DynamicFieldConfig => $DynamicFieldConfig,
-                            PossibleValues     => $DynFieldStates{Fields}{$Name}{PossibleValues},
-                            Value              => [ $DynamicFieldConfig->{Config}{DefaultValue} // '' ],
-                            )
-                            || $DynFieldStates{Fields}{$Name}{PossibleValues}
-                    );
-
-                    # add dynamic field to the list of fields to update
-                    push @DynamicFieldAJAX, {
-                        Name        => "DynamicField_$DynamicFieldConfig->{Name}_Template",
-                        Data        => $DataValues,
-                        SelectedID  => $DynamicFieldConfig->{Config}{DefaultValue} // '',
-                        Translation => $DynamicFieldConfig->{Config}{TranslatableValues} || 0,
-                        Max         => 100,
-                    };
-                }
-
-                next DYNAMICFIELD;
-            }
-
-            my $DataValues = $DynFieldStates{Fields}{$Name}{NotACLReducible}
-                ? ( $GetParam{DynamicField}{"DynamicField_$DynamicFieldConfig->{Name}"} // '' )
-                :
-                (
-                    $BackendObject->BuildSelectionDataGet(
-                        DynamicFieldConfig => $DynamicFieldConfig,
-                        PossibleValues     => $DynFieldStates{Fields}{$Name}{PossibleValues},
-                        Value              => $GetParam{DynamicField}{"DynamicField_$DynamicFieldConfig->{Name}"},
-                    )
-                    || $DynFieldStates{Fields}{$Name}{PossibleValues}
-                );
-
-            # add dynamic field to the list of fields to update
-            push @DynamicFieldAJAX, {
-                Name        => 'DynamicField_' . $DynamicFieldConfig->{Name},
-                Data        => $DataValues,
-                SelectedID  => $GetParam{DynamicField}{"DynamicField_$DynamicFieldConfig->{Name}"},
-                Translation => $DynamicFieldConfig->{Config}{TranslatableValues} || 0,
-                Max         => 100,
-            };
-        }
-
-        for my $SetField ( values $DynFieldStates{Sets}->%* ) {
-            my $DynamicFieldConfig = $SetField->{DynamicFieldConfig};
-
-            # the frontend name is the name of the inner field including its index or the '_Template' suffix
-            DYNAMICFIELD:
-            for my $FrontendName ( keys $SetField->{FieldStates}->%* ) {
-
-                if ( $DynamicFieldConfig->{Config}{MultiValue} && ref $SetField->{Values}{$FrontendName} eq 'ARRAY' ) {
-                    for my $i ( 0 .. $#{ $SetField->{Values}{$FrontendName} } ) {
-                        my $DataValues = $SetField->{FieldStates}{$FrontendName}{NotACLReducible}
-                            ? ( $SetField->{Values}{$FrontendName}[$i] // '' )
-                            :
-                            (
-                                $BackendObject->BuildSelectionDataGet(
-                                    DynamicFieldConfig => $DynamicFieldConfig,
-                                    PossibleValues     => $SetField->{FieldStates}{$FrontendName}{PossibleValues},
-                                    Value              => [ $SetField->{Values}{$FrontendName}[$i] ],
-                                )
-                                || $SetField->{FieldStates}{$FrontendName}{PossibleValues}
-                            );
-
-                        # add dynamic field to the list of fields to update
-                        push @DynamicFieldAJAX, {
-                            Name        => 'DynamicField_' . $FrontendName . "_$i",
-                            Data        => $DataValues,
-                            SelectedID  => $SetField->{Values}{$FrontendName}[$i],
-                            Translation => $DynamicFieldConfig->{Config}{TranslatableValues} || 0,
-                            Max         => 100,
-                        };
-                    }
-
-                    # add template value for keeping templates in line with ACLs
-                    if ( !$SetField->{FieldStates}{$FrontendName}{NotACLReducible} ) {
-                        my $DataValues = (
-                            $BackendObject->BuildSelectionDataGet(
-                                DynamicFieldConfig => $DynamicFieldConfig,
-                                PossibleValues     => $SetField->{FieldStates}{$FrontendName}{PossibleValues},
-                                Value              => [ $DynamicFieldConfig->{Config}{DefaultValue} // '' ],
-                                )
-                                || $SetField->{FieldStates}{$FrontendName}{PossibleValues}
-                        );
-
-                        # add dynamic field to the list of fields to update
-                        push @DynamicFieldAJAX, {
-                            Name        => 'DynamicField_' . $FrontendName . "_Template",
-                            Data        => $DataValues,
-                            SelectedID  => $DynamicFieldConfig->{Config}{DefaultValue} // '',
-                            Translation => $DynamicFieldConfig->{Config}{TranslatableValues} || 0,
-                            Max         => 100,
-                        };
-                    }
-
-                    next DYNAMICFIELD;
-                }
-
-                my $DataValues = $SetField->{FieldStates}{$FrontendName}{NotACLReducible}
-                    ? ( $SetField->{Values}{$FrontendName} // '' )
-                    :
-                    (
-                        $BackendObject->BuildSelectionDataGet(
-                            DynamicFieldConfig => $DynamicFieldConfig,
-                            PossibleValues     => $SetField->{FieldStates}{$FrontendName}{PossibleValues},
-                            Value              => $SetField->{Values}{$FrontendName},
-                        )
-                        || $SetField->{FieldStates}{$FrontendName}{PossibleValues}
-                    );
-
-                # add dynamic field to the list of fields to update
-                push @DynamicFieldAJAX, {
-                    Name        => 'DynamicField_' . $FrontendName,
-                    Data        => $DataValues,
-                    SelectedID  => $SetField->{Values}{$FrontendName},
-                    Translation => $DynamicFieldConfig->{Config}{TranslatableValues} || 0,
-                    Max         => 100,
-                };
-            }
-        }
-
-        if ( IsHashRefWithData( $DynFieldStates{Visibility} ) ) {
-            push @DynamicFieldAJAX, {
-                Name => 'Restrictions_Visibility',
-                Data => $DynFieldStates{Visibility},
-            };
-        }
+        my @DynamicFieldAJAX = $BackendObject->BuildAJAXReturn(
+            DynamicFieldConfigs => $Self->{FollowUpDynamicField},
+            GetParam            => \%GetParam,
+            DynFieldStates      => \%DynFieldStates,
+        );
 
         # build AJAX return for the standard fields
         my @StdFieldAJAX;
@@ -1983,23 +1827,9 @@ sub _Mask {
         # create additional objects for process management
         my $ActivityObject       = $Kernel::OM->Get('Kernel::System::ProcessManagement::Activity');
         my $ActivityDialogObject = $Kernel::OM->Get('Kernel::System::ProcessManagement::ActivityDialog');
-        my $ProcessObject        = $Kernel::OM->Get('Kernel::System::ProcessManagement::Process');
-        my $ProcessData          = $ProcessObject->ProcessGet(
-            ProcessEntityID => $Param{$ProcessEntityIDField},
-        );
-
-        my $ActivityData = $ActivityObject->ActivityGet(
+        my $ActivityData         = $ActivityObject->ActivityGet(
             Interface        => 'CustomerInterface',
             ActivityEntityID => $Param{$ActivityEntityIDField},
-        );
-
-        # output process information in the sidebar
-        $LayoutObject->Block(
-            Name => 'ProcessData',
-            Data => {
-                Process  => $ProcessData->{Name}  || '',
-                Activity => $ActivityData->{Name} || '',
-            },
         );
 
         # output the process widget on the main screen
@@ -2012,20 +1842,16 @@ sub _Mask {
 
         # get next activity dialogs
         my $NextActivityDialogs;
-        if ( $Param{$ActivityEntityIDField} ) {
-            $NextActivityDialogs = $ActivityData;
+        if (
+            $Param{$ActivityEntityIDField}
+            && IsHashRefWithData($ActivityData)
+            && IsHashRefWithData( $ActivityData->{ActivityDialog} )
+            )
+        {
+            $NextActivityDialogs = $ActivityData->{ActivityDialog} || {};
         }
 
         if ( IsHashRefWithData($NextActivityDialogs) ) {
-
-            # we don't need the whole Activity config,
-            # just the Activity Dialogs of the current Activity
-            if ( IsHashRefWithData( $NextActivityDialogs->{ActivityDialog} ) ) {
-                %{$NextActivityDialogs} = %{ $NextActivityDialogs->{ActivityDialog} };
-            }
-            else {
-                $NextActivityDialogs = {};
-            }
 
             if ( !$Kernel::OM->Get('Kernel::System::Main')->Require("Kernel::Modules::CustomerTicketProcess") ) {
                 return $LayoutObject->FatalError(
@@ -2406,14 +2232,12 @@ sub _Mask {
     }
 
     # Expand option
-    my $ExpandOption = ( $ZoomExpand ? 'One'              : 'All' );
-    my $ExpandText   = ( $ZoomExpand ? 'Show one article' : 'Show all articles' );
     $LayoutObject->Block(
         Name => 'Expand',
         Data => {
             ZoomExpand   => !$ZoomExpand,
-            ExpandOption => $ExpandOption,
-            ExpandText   => $ExpandText,
+            ExpandOption => ( $ZoomExpand ? 'One'              : 'All' ),
+            ExpandText   => ( $ZoomExpand ? 'Show one article' : 'Show all articles' ),
             %Param,
         },
     );
@@ -2451,6 +2275,7 @@ sub _Mask {
         $Article{Age} = $LayoutObject->CustomerAge(
             Age   => $Delta->{AbsoluteSeconds},
             Space => ' ',
+            Date  => $Article{CreateTime},
         );
 
         $Article{Subject} = $TicketObject->TicketSubjectClean(
