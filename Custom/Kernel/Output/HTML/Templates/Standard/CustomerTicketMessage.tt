@@ -4,7 +4,7 @@
 # Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # Copyright (C) 2019-2026 Rother OSS GmbH, https://otobo.io/
 # --
-# $origin: otobo - b48bc591c0b9e63471f3d5c4554b3ff49075b5ba - Kernel/Output/HTML/Templates/Standard/CustomerTicketMessage.tt
+# $origin: otobo - 2c1dbb2c6c285dcc14eb7f2c3a7cf43d5f993ac2 - Kernel/Output/HTML/Templates/Standard/CustomerTicketMessage.tt
 # --
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -64,21 +64,6 @@
                 </div>
 [% RenderBlockEnd("TicketType") %]
 
-[% RenderBlockStart("Queue") %]
-                <div class="Row">
-                    <div class="FieldCell">
-                        <div class="Field">
-                            [% Data.ToStrg %]
-                        </div>
-                        <label for="Dest" class="Mandatory">
-                            [% Translate("To") | html %] <span class="Marker">*</span>
-                        </label>
-                        <div id="DestError" class="TooltipErrorMessage" ><p>[% Translate("This field is required.") | html %]</p></div>
-                        <div id="DestServerError" class="TooltipErrorMessage NoJavaScriptMessage[% Data.QueueInvalid | html %]" ><p>[% Translate("This field is required.") | html %]</p></div>
-                    </div>
-                </div>
-[% RenderBlockEnd("Queue") %]
-
 [% RenderBlockStart("TicketService") %]
                 <div class="Row">
                     <div class="FieldCell">
@@ -116,6 +101,21 @@
                     </div>
                 </div>
 [% RenderBlockEnd("TicketSLA") %]
+
+[% RenderBlockStart("Queue") %]
+                <div class="Row">
+                    <div class="FieldCell">
+                        <div class="Field">
+                            [% Data.ToStrg %]
+                        </div>
+                        <label for="Dest" class="Mandatory">
+                            [% Translate("To") | html %] <span class="Marker">*</span>
+                        </label>
+                        <div id="DestError" class="TooltipErrorMessage" ><p>[% Translate("This field is required.") | html %]</p></div>
+                        <div id="DestServerError" class="TooltipErrorMessage NoJavaScriptMessage[% Data.QueueInvalid | html %]" ><p>[% Translate("This field is required.") | html %]</p></div>
+                    </div>
+                </div>
+[% RenderBlockEnd("Queue") %]
 
 [% RenderBlockStart("DynamicField_TitleDynamicFields") %]
                 <div class="Row Row_DynamicField_[% Data.Name | html %][% Data.HiddenClass | html %]" [% Data.HiddenStyle | html %]>

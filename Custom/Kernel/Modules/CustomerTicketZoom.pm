@@ -4,7 +4,7 @@
 # Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # Copyright (C) 2019-2026 Rother OSS GmbH, https://otobo.io/
 # --
-# $origin: otobo - 581e36fb3affc2a387dd70824e309f45163545fe - Kernel/Modules/CustomerTicketZoom.pm
+# $origin: otobo - bd638ceea3f14f40393fe4cc6aea7091eb59b889 - Kernel/Modules/CustomerTicketZoom.pm
 # --
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -1247,8 +1247,8 @@ sub Run {
             }
         }
 
-        # remove all form data
-        $Kernel::OM->Get('Kernel::System::Web::FormCache')->FormIDRemove( FormID => $Self->{FormID} );
+        # remove pre submitted attachments
+        $UploadCacheObject->FormIDRemove( FormID => $Self->{FormID} );
 
         # delete hidden fields cache
         $Kernel::OM->Get('Kernel::System::Cache')->Delete(
@@ -1291,6 +1291,7 @@ sub Run {
     # Get values for Ticket fields and use default value for Article fields, if given (this
     # screen generates a new article, then article fields will be always default value or
     # empty at the beginning).
+    my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
     DYNAMICFIELD:
     for my $DynamicFieldConfig ( values $Self->{FollowUpDynamicField}->%* ) {
         next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
@@ -1302,6 +1303,21 @@ sub Run {
         elsif ( $DynamicFieldConfig->{ObjectType} eq 'Article' ) {
             $GetParam{DynamicField}{ 'DynamicField_' . $DynamicFieldConfig->{Name} } = $DynamicFieldConfig->{Config}->{DefaultValue} || '';
         }
+
+        # pre-filling cache for reference field - necessary for ACL calculation of lens fields
+        my $IsReferenceField = $DynamicFieldBackendObject->HasBehavior(
+            Behavior           => 'IsReferenceField',
+            DynamicFieldConfig => $DynamicFieldConfig,
+        );
+
+        next DYNAMICFIELD unless $IsReferenceField;
+
+        $Kernel::OM->Get('Kernel::System::Web::FormCache')->SetFormData(
+            LayoutObject => $LayoutObject,
+            FormID       => $Self->{FormID},
+            Key          => 'PossibleValues_DynamicField_' . $DynamicFieldConfig->{Name},
+            Value        => $GetParam{DynamicField}{"DynamicField_$DynamicFieldConfig->{Name}"},
+        );
     }
 
     my $FieldRestrictionsObject = $Kernel::OM->Get('Kernel::System::Ticket::FieldRestrictions');
@@ -1820,7 +1836,7 @@ sub _Mask {
         my $ProcessEntityIDField = 'DynamicField_'
             . $ConfigObject->Get("Process::DynamicFieldProcessManagementProcessID");
 
-        # get the DF where the AtivityEntityID is stored
+        # get the DF where the ActivityEntityID is stored
         my $ActivityEntityIDField = 'DynamicField_'
             . $ConfigObject->Get("Process::DynamicFieldProcessManagementActivityID");
 
