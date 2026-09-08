@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OTOBO Documentation dev\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-24 11:09+0000\n"
+"POT-Creation-Date: 2026-09-08 09:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -129,7 +129,7 @@ msgid "Framework"
 msgstr ""
 
 #: ../content/index.rst:66
-msgid "OTOBO 11.0.x"
+msgid "OTOBO 11.1.x"
 msgstr ""
 
 #: ../content/index.rst:69
@@ -231,123 +231,123 @@ msgstr ""
 msgid "Configuration Reference"
 msgstr ""
 
-#: ../content/index.rst:112
+#: ../content/index.rst:113
 msgid "Core::Ticket"
 msgstr ""
 
-#: ../content/index.rst:115
-msgid "StandardTemplate::CustomerTypes"
-msgstr ""
-
 #: ../content/index.rst:116
-msgid "Defines the list of customer types for templates."
-msgstr ""
-
-#: ../content/index.rst:119
-msgid "CustomerTemplate::ReferenceAttribute"
-msgstr ""
-
-#: ../content/index.rst:120
-msgid "Defines if the list of available standard templates depends on the queue or on the service"
-msgstr ""
-
-#: ../content/index.rst:123
 msgid "CustomerTemplate::Autoselect"
 msgstr ""
 
-#: ../content/index.rst:124
+#: ../content/index.rst:117
 msgid "Defines if a standard template should be automatically selected when it is the only one available."
 msgstr ""
 
-#: ../content/index.rst:127
+#: ../content/index.rst:120
+msgid "CustomerTemplate::ReferenceAttribute"
+msgstr ""
+
+#: ../content/index.rst:121
+msgid "Defines if the list of available standard templates depends on the queue or on the service."
+msgstr ""
+
+#: ../content/index.rst:124
+msgid "StandardTemplate::CustomerTypes"
+msgstr ""
+
+#: ../content/index.rst:125
+msgid "Defines the list of customer types for templates."
+msgstr ""
+
+#: ../content/index.rst:128
 msgid "Frontend::Admin::ModuleRegistration"
 msgstr ""
 
-#: ../content/index.rst:130
+#: ../content/index.rst:131
 msgid "Frontend::Module###AdminServiceTemplates"
 msgstr ""
 
-#: ../content/index.rst:131
+#: ../content/index.rst:132
 msgid "Frontend module registration for the agent interface."
 msgstr ""
 
-#: ../content/index.rst:134
+#: ../content/index.rst:135
 msgid "Frontend::Admin::ModuleRegistration::AdminOverview"
 msgstr ""
 
-#: ../content/index.rst:137
+#: ../content/index.rst:138
 msgid "Frontend::NavigationModule###AdminServiceTemplates"
 msgstr ""
 
-#: ../content/index.rst:138
+#: ../content/index.rst:139
 msgid "Admin area navigation for the agent interface."
 msgstr ""
 
-#: ../content/index.rst:141
+#: ../content/index.rst:142
 msgid "Frontend::Admin::ModuleRegistration::Loader"
 msgstr ""
 
-#: ../content/index.rst:144
+#: ../content/index.rst:145
 msgid "Loader::Module::AdminServiceTemplates###002-Ticket"
 msgstr ""
 
-#: ../content/index.rst:145
+#: ../content/index.rst:146
 msgid "Loader module registration for the agent interface."
 msgstr ""
 
-#: ../content/index.rst:148
+#: ../content/index.rst:149
 msgid "Frontend::Admin::ModuleRegistration::MainMenu"
 msgstr ""
 
-#: ../content/index.rst:151
+#: ../content/index.rst:152
 msgid "Frontend::Navigation###AdminServiceTemplates###002-Ticket"
 msgstr ""
 
-#: ../content/index.rst:152
+#: ../content/index.rst:153
 msgid "Main menu item registration."
 msgstr ""
 
-#: ../content/index.rst:155
+#: ../content/index.rst:156
 msgid "Frontend::Customer::ModuleRegistration::Loader"
 msgstr ""
 
-#: ../content/index.rst:158
+#: ../content/index.rst:159
 msgid "Loader::Module::CustomerTicketMessage###003-StandardTemplates"
 msgstr ""
 
-#: ../content/index.rst:159
-#: ../content/index.rst:163
+#: ../content/index.rst:160
+#: ../content/index.rst:164
 msgid "Loader module registration for the customer interface."
 msgstr ""
 
-#: ../content/index.rst:162
+#: ../content/index.rst:163
 msgid "Loader::Module::CustomerTicketZoom###003-StandardTemplates"
 msgstr ""
 
-#: ../content/index.rst:166
+#: ../content/index.rst:167
 msgid "About"
 msgstr ""
 
-#: ../content/index.rst:169
+#: ../content/index.rst:170
 msgid "Contact"
 msgstr ""
 
-#: ../content/index.rst:170
+#: ../content/index.rst:171
 msgid "Rother OSS GmbH"
 msgstr ""
 
-#: ../content/index.rst:171
+#: ../content/index.rst:172
 msgid "Email: hello@otobo.io"
 msgstr ""
 
-#: ../content/index.rst:172
+#: ../content/index.rst:173
 msgid "Web: https://otobo.io"
 msgstr ""
 
-#: ../content/index.rst:175
+#: ../content/index.rst:176
 msgid "Version"
 msgstr ""
 
-#: ../content/index.rst:176
+#: ../content/index.rst:177
 msgid "Author: |doc-vendor| / Version: |doc-version| / Date of release: |doc-datestamp|"
 msgstr ""
