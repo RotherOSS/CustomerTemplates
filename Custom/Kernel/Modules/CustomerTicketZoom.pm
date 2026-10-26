@@ -4,7 +4,7 @@
 # Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # Copyright (C) 2019-2026 Rother OSS GmbH, https://otobo.io/
 # --
-# $origin: otobo - bd638ceea3f14f40393fe4cc6aea7091eb59b889 - Kernel/Modules/CustomerTicketZoom.pm
+# $origin: otobo - a632ea733523453123fd050d4c67a4c87dd7439e - Kernel/Modules/CustomerTicketZoom.pm
 # --
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -123,13 +123,11 @@ sub new {
             FieldID => 'NextStateID',
             Method  => \&_GetNextStates
         },
-
 # Rother OSS / CustomerTemplate
         {
             FieldID => 'StandardTemplateID',
             Method  => \&_GetStandardTemplates
         },
-
 # EO CustomerTemplate
     ];
 
@@ -328,10 +326,8 @@ sub Run {
     }
 
     my %GetParam;
-
 # Rother OSS / CustomerTemplate
 #    for my $Key (qw(Subject Body StateID PriorityID FromChatID FromChat)) {
-
     for my $Key (qw(Subject Body StateID PriorityID FromChatID FromChat StandardTemplateID)) {
 # EO CustomerTemplate
 
@@ -473,7 +469,6 @@ sub Run {
                 my %Check = (
                     NextStateID => 'NextStateID',
                     PriorityID  => 'PriorityID',
-
 # Rother OSS / CustomerTemplate
                     StandardTemplateID => 'StandardTemplateID',
 # EO CustomerTemplate
@@ -2070,6 +2065,7 @@ sub _Mask {
             Value              => $Value,
             ValueMaxChars      => 25,
             LayoutObject       => $LayoutObject,
+            MultiLink          => 1,
         );
 
         my $Label = $DynamicFieldConfig->{Label};
@@ -2081,17 +2077,46 @@ sub _Mask {
             },
         );
 
-        if ( $DynamicFieldConfig->{Config}->{Link} ) {
-            $LayoutObject->Block(
-                Name => 'TicketDynamicFieldLink',
-                Data => {
-                    Value                       => $ValueStrg->{Value},
-                    Title                       => $ValueStrg->{Title},
-                    Link                        => $DynamicFieldConfig->{Config}->{Link},
-                    LinkPreview                 => $DynamicFieldConfig->{Config}->{LinkPreview},
-                    $DynamicFieldConfig->{Name} => $ValueStrg->{Value},
-                },
-            );
+        if ( $ValueStrg->{Link} ) {
+            if ( IsArrayRefWithData( $ValueStrg->{Link} ) ) {
+                $LayoutObject->Block(
+                    Name => 'TicketDynamicFieldLink',
+                );
+                for my $Index ( 0 .. $#{ $ValueStrg->{Link} } ) {
+                    $LayoutObject->Block(
+                        Name => 'ValueItemLink',
+                        Data => {
+                            Value                       => $ValueStrg->{Value}[$Index],
+                            Title                       => $ValueStrg->{Title}[$Index],
+                            Link                        => $ValueStrg->{Link}[$Index],
+                            LinkPreview                 => $ValueStrg->{LinkPreview}[$Index],
+                            $DynamicFieldConfig->{Name} => $ValueStrg->{Value}[$Index],
+                        },
+                    );
+
+                    if ( $Index != $#{ $ValueStrg->{Link} } ) {
+                        $LayoutObject->Block(
+                            Name => 'MultivalueSeparatorLink',
+                        );
+                    }
+                }
+            }
+            else {
+                $LayoutObject->Block(
+                    Name => 'TicketDynamicFieldLink',
+                );
+                $LayoutObject->Block(
+                    Name => 'ValueItemLink',
+                    Data => {
+                        Value                       => $ValueStrg->{Value},
+                        Title                       => $ValueStrg->{Title},
+                        Link                        => $ValueStrg->{Link},
+                        LinkPreview                 => $ValueStrg->{LinkPreview},
+                        $DynamicFieldConfig->{Name} => $ValueStrg->{Value},
+                    },
+                );
+            }
+
         }
         else {
             $LayoutObject->Block(
@@ -2578,7 +2603,7 @@ sub _Mask {
         $Avatar = '//www.gravatar.com/avatar/' . md5_hex( lc $CustomerUser{UserEmail} ) . '?s=100&d=' . $DefaultIcon;
     }
     else {
-        $UserInitials = substr( $CustomerUser{UserFirstName}, 0, 1 ) . substr( $CustomerUser{UserLastName}, 0, 1 );
+        $UserInitials = substr( $CustomerUser{UserFirstname}, 0, 1 ) . substr( $CustomerUser{UserLastname}, 0, 1 );
     }
 
     # explanatory message about asterisk
